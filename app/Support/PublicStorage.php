@@ -4,7 +4,10 @@ namespace App\Support;
 
 /**
  * URLs de arquivos em storage/app/public (expostos via public/storage).
- * Usa asset() para seguir o host atual e APP_URL/ASSET_URL corretamente.
+ *
+ * Usa caminho relativo "/storage/..." para o navegador sempre pedir no mesmo
+ * host/protocolo da página (evita imagem quebrada quando APP_URL está em http
+ * e o site em https, ou domínio diferente do .env).
  */
 final class PublicStorage
 {
@@ -16,6 +19,6 @@ final class PublicStorage
 
         $path = ltrim($path, '/');
 
-        return asset('storage/'.$path);
+        return '/storage/'.$path;
     }
 }

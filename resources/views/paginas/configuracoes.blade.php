@@ -219,23 +219,34 @@
                     <div class="px-5 py-5">
                         <p class="text-sm font-medium text-gray-700">Logo da Empresa</p>
                         <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start">
-                            @if ($settings->logoPublicUrl())
+                            @php
+                                $logoSrc = $settings->logoPublicUrl();
+                            @endphp
+                            <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-white shadow-inner ring-1 ring-gray-300">
                                 <img
-                                    src="{{ $settings->logoPublicUrl() }}"
-                                    alt="Logo"
-                                    class="h-16 w-16 shrink-0 rounded-lg bg-white object-contain p-1 shadow-inner ring-1 ring-gray-300"
+                                    id="pdv-logo-preview"
+                                    src="{{ $logoSrc }}"
+                                    alt=""
+                                    class="h-16 w-16 object-contain p-1 {{ $logoSrc ? '' : 'hidden' }}"
+                                    width="64"
+                                    height="64"
+                                    @if ($logoSrc) loading="lazy" @endif
                                 />
-                            @else
-                                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-black shadow-inner ring-1 ring-gray-300" title="Pré-visualização do logo">
+                                <div
+                                    id="pdv-logo-placeholder"
+                                    class="{{ $logoSrc ? 'hidden' : 'flex' }} h-16 w-16 items-center justify-center bg-black"
+                                    title="Pré-visualização do logo"
+                                >
                                     <span class="text-2xl font-bold text-emerald-400">{{ strtoupper(Str::substr($settings->displayName(), 0, 1)) }}</span>
                                 </div>
-                            @endif
+                            </div>
                             <div class="min-w-0 flex-1 space-y-3">
                                 <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
                                     <input
                                         type="checkbox"
                                         name="remover_logo"
                                         value="1"
+                                        id="pdv-remover-logo"
                                         class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                                         @checked(old('remover_logo'))
                                     />
@@ -244,8 +255,15 @@
                                 <div class="flex flex-wrap items-center gap-3">
                                     <label class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-200">
                                         <span>Escolher Arquivo</span>
-                                        <input type="file" name="logo" accept=".png,.jpg,.jpeg,.gif,.svg,image/png,image/jpeg,image/gif,image/svg+xml" class="sr-only" />
+                                        <input
+                                            id="pdv-logo-input"
+                                            type="file"
+                                            name="logo"
+                                            accept=".png,.jpg,.jpeg,.gif,.svg,image/png,image/jpeg,image/gif,image/svg+xml"
+                                            class="sr-only"
+                                        />
                                     </label>
+                                    <span id="pdv-logo-filename" class="text-sm text-gray-600"></span>
                                     <span class="text-sm text-gray-500">PNG, JPG, GIF ou SVG até 2&nbsp;MB</span>
                                 </div>
                                 @error('logo')
@@ -284,4 +302,55 @@
             </div>
         </div>
     </div>
+    <script>
+        (function () {
+            var input = document.getElementById('pdv-logo-input');
+            var img = document.getElementById('pdv-logo-preview');
+            var ph = document.getElementById('pdv-logo-placeholder');
+            var nameEl = document.getElementById('pdv-logo-filename');
+            var remover = document.getElementById('pdv-remover-logo');
+            if (!input || !img || !ph) {
+                return;
+            }
+            input.addEventListener('change', function () {
+                var f = this.files && this.files[0];
+                if (remover) {
+                    remover.checked = false;
+                }
+                if (!f) {
+                    return;
+                }
+                if (nameEl) {
+                    nameEl.textContent = f.name;
+                }
+                var prev = img.getAttribute('data-blob-url');
+                if (prev) {
+                    URL.revokeObjectURL(prev);
+                }
+                var url = URL.createObjectURL(f);
+                img.setAttribute('data-blob-url', url);
+                img.src = url;
+                img.classList.remove('hidden');
+                ph.classList.add('hidden');
+            });
+            if (remover) {
+                remover.addEventListener('change', function () {
+                    if (!this.checked) {
+                        return;
+                    }
+                    var prev = img.getAttribute('data-blob-url');
+                    if (prev) {
+                        URL.revokeObjectURL(prev);
+                        img.removeAttribute('data-blob-url');
+                    }
+                    input.value = '';
+                    if (nameEl) {
+                        nameEl.textContent = '';
+                    }
+                    img.classList.add('hidden');
+                    ph.classList.remove('hidden');
+                });
+            }
+        })();
+    </script>
 </x-app-layout>
