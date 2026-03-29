@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Company;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class StoreCompanyRequest extends FormRequest
@@ -15,6 +16,13 @@ class StoreCompanyRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->filled('admin_email')) {
+            $this->merge(['admin_email' => Str::lower(trim((string) $this->input('admin_email')))]);
+        }
+        if ($this->filled('email')) {
+            $this->merge(['email' => Str::lower(trim((string) $this->input('email')))]);
+        }
+
         $raw = $this->input('allowed_screens');
         $keys = Company::tenantSelectableScreenKeys();
         if (! is_array($raw) || $raw === [] || count(array_filter($raw, fn ($v) => $v !== null && $v !== '')) === 0) {

@@ -3,6 +3,14 @@
 
     <h1 class="text-2xl font-bold text-gray-900">{{ config('app.name', 'Sistema PDV') }}</h1>
     <p class="mt-1 text-sm text-gray-500">Entre com seu e-mail e senha</p>
+    <p class="mt-3 text-xs leading-relaxed text-slate-600">
+        <strong>Administrador de empresa nova?</strong> Use o <strong>mesmo e-mail e senha</strong> do campo “E-mail do admin” ao cadastrar a empresa (super admin). Não existe conta automática em <span class="font-mono">admin@pdvsistema.com</span> a menos que você tenha cadastrado esse e-mail.
+    </p>
+    @if (app()->environment('local'))
+        <p class="mt-2 text-xs text-slate-500">
+            Ambiente local com <span class="font-mono">php artisan db:seed</span>: tente <span class="font-mono">admin@sistema.pdv</span> ou <span class="font-mono">super@sistema.pdv</span>, senha <span class="font-mono">password</span>.
+        </p>
+    @endif
 
     <form method="POST" action="{{ route('login') }}" class="mt-8 space-y-5">
         @csrf

@@ -65,7 +65,10 @@ class CompanyController extends Controller
 
         return redirect()
             ->route('empresas.index')
-            ->with('status', 'Empresa e administrador cadastrados com sucesso.');
+            ->with(
+                'status',
+                'Empresa cadastrada. O administrador deve entrar no login com o e-mail '.$data['admin_email'].' e a senha definida no cadastro (não existe um e-mail padrão tipo admin@pdvsistema.com).'
+            );
     }
 
     public function edit(Company $empresa): View
