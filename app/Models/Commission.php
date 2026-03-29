@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Commission extends Model
 {
+    use BelongsToCompany;
+
     public const STATUS_PENDENTE = 'pendente';
 
     public const STATUS_PAGO = 'pago';

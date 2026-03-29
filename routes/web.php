@@ -4,6 +4,7 @@ use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyContextController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EntradaController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\EntregaController;
@@ -33,7 +34,7 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified', 'super.panel', 'pdv.screen'])->group(function () {
-    Route::view('/dashboard', 'paginas.dashboard')->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::middleware('saas')->group(function () {
         Route::get('/empresas', [CompanyController::class, 'index'])->name('empresas.index');
