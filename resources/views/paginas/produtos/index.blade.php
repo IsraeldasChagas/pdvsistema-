@@ -9,16 +9,10 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <h1 class="text-3xl font-bold tracking-tight text-gray-900">Produtos</h1>
             <div class="flex flex-wrap items-center gap-3">
-                <a
-                    href="{{ route('produtos.create') }}"
-                    class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-                >
+                <a href="{{ route('produtos.create') }}" class="btn-pdv btn-pdv-primary">
                     + Novo Produto
                 </a>
-                <a
-                    href="{{ route('modulos.categorias') }}"
-                    class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-                >
+                <a href="{{ route('modulos.categorias') }}" class="btn-pdv btn-pdv-secondary">
                     Categorias
                 </a>
             </div>
@@ -69,9 +63,9 @@
                             <p class="mt-0.5 whitespace-pre-wrap break-words text-sm font-normal text-gray-700">{{ $p->caracteristicas ?: '—' }}</p>
                         </div>
                     </div>
-                    <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-gray-100 pt-4 text-sm">
-                        <a href="{{ route('produtos.show', $p) }}" class="font-medium text-gray-600 hover:text-gray-900">Visualizar</a>
-                        <a href="{{ route('produtos.edit', $p) }}" class="font-medium text-blue-600 hover:text-blue-700">Editar</a>
+                    <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">
+                        <a href="{{ route('produtos.show', $p) }}" class="btn-pdv-ghost btn-pdv-ghost-neutral">Visualizar</a>
+                        <a href="{{ route('produtos.edit', $p) }}" class="btn-pdv-ghost btn-pdv-ghost-blue">Editar</a>
                         <form
                             action="{{ route('produtos.destroy', $p) }}"
                             method="post"
@@ -80,7 +74,7 @@
                         >
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="font-medium text-red-600 hover:text-red-700">Excluir</button>
+                            <button type="submit" class="btn-pdv-ghost btn-pdv-ghost-red">Excluir</button>
                         </form>
                     </div>
                 </article>
@@ -128,11 +122,9 @@
                                     @endif
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3">
-                                    <span class="flex flex-wrap items-center gap-x-1 text-xs sm:text-sm">
-                                        <a href="{{ route('produtos.show', $p) }}" class="font-medium text-gray-500 hover:text-gray-700">Visualizar</a>
-                                        <span class="text-gray-300" aria-hidden="true">|</span>
-                                        <a href="{{ route('produtos.edit', $p) }}" class="font-medium text-blue-600 hover:text-blue-700">Editar</a>
-                                        <span class="text-gray-300" aria-hidden="true">|</span>
+                                    <span class="flex flex-wrap items-center gap-1">
+                                        <a href="{{ route('produtos.show', $p) }}" class="btn-pdv-ghost btn-pdv-ghost-neutral text-xs sm:text-sm">Visualizar</a>
+                                        <a href="{{ route('produtos.edit', $p) }}" class="btn-pdv-ghost btn-pdv-ghost-blue text-xs sm:text-sm">Editar</a>
                                         <form
                                             action="{{ route('produtos.destroy', $p) }}"
                                             method="post"
@@ -141,7 +133,7 @@
                                         >
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="font-medium text-red-600 hover:text-red-700">Excluir</button>
+                                            <button type="submit" class="btn-pdv-ghost btn-pdv-ghost-red text-xs sm:text-sm">Excluir</button>
                                         </form>
                                     </span>
                                 </td>

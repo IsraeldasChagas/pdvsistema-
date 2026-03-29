@@ -85,7 +85,7 @@
                         <span class="max-w-[200px] truncate text-sm font-medium text-gray-800 sm:max-w-none">{{ $u->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-700">
+                            <button type="submit" class="btn-pdv-ghost btn-pdv-ghost-red px-3 py-1.5 text-sm">
                                 Sair
                             </button>
                         </form>
