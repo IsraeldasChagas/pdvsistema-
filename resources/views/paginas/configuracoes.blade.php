@@ -37,14 +37,76 @@
                 </div>
             @endif
 
-            <form
-                action="{{ route('configuracoes.update') }}"
-                method="post"
-                enctype="multipart/form-data"
-                class="mt-8 space-y-6"
-            >
+            @php
+                $logoSrcTop = $settings->logoPublicUrl();
+                $transparentPixel = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+            @endphp
+
+            <section class="mt-8 overflow-hidden rounded-xl border border-emerald-200 bg-white shadow-sm ring-1 ring-emerald-100/80">
+                <div class="flex gap-3 border-b border-emerald-50 bg-white px-5 py-4">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-white shadow-sm ring-1 ring-slate-900/20" aria-hidden="true">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3A1.5 1.5 0 001.5 6v12a1.5 1.5 0 001.5 1.5z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-gray-900">Logo da empresa</h2>
+                        <p class="text-sm text-gray-600">Escolha a imagem e clique em <strong>Salvar logo</strong> (envio separado das demais configurações).</p>
+                    </div>
+                </div>
+                <form action="{{ route('configuracoes.logo') }}" method="post" enctype="multipart/form-data" class="space-y-4 px-5 py-5">
+                    @csrf
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+                        <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-white shadow-inner ring-1 ring-gray-300">
+                            <img
+                                id="pdv-logo-preview"
+                                src="{{ $logoSrcTop ?: $transparentPixel }}"
+                                alt=""
+                                class="h-16 w-16 object-contain p-1 {{ $logoSrcTop ? '' : 'hidden' }}"
+                                width="64"
+                                height="64"
+                                @if ($logoSrcTop) loading="lazy" @endif
+                            />
+                            <div
+                                id="pdv-logo-placeholder"
+                                class="{{ $logoSrcTop ? 'hidden' : 'flex' }} absolute inset-0 items-center justify-center bg-black"
+                                title="Pré-visualização"
+                            >
+                                <span class="text-2xl font-bold text-emerald-400">{{ strtoupper(Str::substr($settings->displayName(), 0, 1)) }}</span>
+                            </div>
+                        </div>
+                        <div class="min-w-0 flex-1 space-y-3">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <label class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-200">
+                                    <span>Escolher imagem</span>
+                                    <input
+                                        id="pdv-logo-input"
+                                        type="file"
+                                        name="logo"
+                                        accept=".png,.jpg,.jpeg,.gif,.svg,.webp,image/*"
+                                        class="sr-only"
+                                        required
+                                    />
+                                </label>
+                                <button
+                                    type="submit"
+                                    class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1"
+                                >
+                                    Salvar logo
+                                </button>
+                            </div>
+                            <span id="pdv-logo-filename" class="block text-sm text-gray-600"></span>
+                            <p class="text-xs text-gray-500">PNG, JPG, GIF, WebP ou SVG. Máximo 10&nbsp;MB.</p>
+                            @error('logo')
+                                <p class="text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <form action="{{ route('configuracoes.update') }}" method="post" class="mt-8 space-y-6">
                 @csrf
-                @method('PUT')
 
                 <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                     <div class="flex gap-3 border-b border-gray-100 bg-white px-5 py-4">
@@ -199,80 +261,7 @@
                                 class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                             />
                         </div>
-                    </div>
-                </section>
-
-                <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                    <div class="flex gap-3 border-b border-gray-100 bg-white px-5 py-4">
-                        <div class="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-800 shadow-sm ring-1 ring-slate-900/20" aria-hidden="true">
-                            <span class="absolute left-1 top-1 h-3 w-3 rounded-sm bg-red-500 opacity-90"></span>
-                            <span class="absolute bottom-1 right-1 h-3 w-3 rounded-sm bg-blue-500 opacity-90"></span>
-                            <svg class="relative z-10 h-5 w-5 text-white/90" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3A1.5 1.5 0 001.5 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008H12V8.25z" />
-                            </svg>
-                        </div>
                         <div>
-                            <h2 class="text-base font-bold text-gray-900">Logo e Exibição</h2>
-                            <p class="text-sm text-gray-500">Logo no menu lateral e nome da loja</p>
-                        </div>
-                    </div>
-                    <div class="px-5 py-5">
-                        <p class="text-sm font-medium text-gray-700">Logo da Empresa</p>
-                        <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start">
-                            @php
-                                $logoSrc = $settings->logoPublicUrl();
-                            @endphp
-                            <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-white shadow-inner ring-1 ring-gray-300">
-                                <img
-                                    id="pdv-logo-preview"
-                                    src="{{ $logoSrc }}"
-                                    alt=""
-                                    class="h-16 w-16 object-contain p-1 {{ $logoSrc ? '' : 'hidden' }}"
-                                    width="64"
-                                    height="64"
-                                    @if ($logoSrc) loading="lazy" @endif
-                                />
-                                <div
-                                    id="pdv-logo-placeholder"
-                                    class="{{ $logoSrc ? 'hidden' : 'flex' }} h-16 w-16 items-center justify-center bg-black"
-                                    title="Pré-visualização do logo"
-                                >
-                                    <span class="text-2xl font-bold text-emerald-400">{{ strtoupper(Str::substr($settings->displayName(), 0, 1)) }}</span>
-                                </div>
-                            </div>
-                            <div class="min-w-0 flex-1 space-y-3">
-                                <label class="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
-                                    <input
-                                        type="checkbox"
-                                        name="remover_logo"
-                                        value="1"
-                                        id="pdv-remover-logo"
-                                        class="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                                        @checked(old('remover_logo'))
-                                    />
-                                    Remover logo
-                                </label>
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <label class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-200">
-                                        <span>Escolher Arquivo</span>
-                                        <input
-                                            id="pdv-logo-input"
-                                            type="file"
-                                            name="logo"
-                                            accept=".png,.jpg,.jpeg,.gif,.svg,image/png,image/jpeg,image/gif,image/svg+xml"
-                                            class="sr-only"
-                                        />
-                                    </label>
-                                    <span id="pdv-logo-filename" class="text-sm text-gray-600"></span>
-                                    <span class="text-sm text-gray-500">PNG, JPG, GIF ou SVG até 2&nbsp;MB</span>
-                                </div>
-                                @error('logo')
-                                    <p class="text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                                <p class="text-xs text-gray-500">Recomendado 200×200px. Fundo transparente (PNG/SVG).</p>
-                            </div>
-                        </div>
-                        <div class="mt-6">
                             <label for="nome_loja" class="block text-sm font-medium text-gray-700">Nome da Loja (opcional)</label>
                             <input
                                 id="nome_loja"
@@ -280,12 +269,26 @@
                                 name="nome_loja"
                                 value="{{ old('nome_loja', $settings->nome_loja) }}"
                                 placeholder="Ex: Minha Loja"
-                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                             />
                             <p class="mt-1 text-xs text-gray-500">Aparece no topo e no menu; se vazio, usa o nome da empresa ou o nome do app.</p>
                         </div>
                     </div>
                 </section>
+
+                <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                    <label class="flex cursor-pointer items-start gap-2 text-sm text-gray-800">
+                        <input
+                            type="checkbox"
+                            name="remover_logo"
+                            value="1"
+                            id="pdv-remover-logo"
+                            class="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                            @checked(old('remover_logo'))
+                        />
+                        <span>Remover logo atual (use junto com <strong>Salvar configurações</strong>)</span>
+                    </label>
+                </div>
 
                 <div class="flex justify-end pt-2">
                     <button

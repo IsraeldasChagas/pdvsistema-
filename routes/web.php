@@ -108,7 +108,8 @@ Route::middleware(['auth', 'verified', 'super.panel', 'pdv.screen'])->group(func
     Route::post('/caixa/venda', [CaixaController::class, 'registrarVenda'])->name('caixa.venda');
     Route::get('/relatorios', [RelatorioController::class, 'index'])->name('modulos.relatorios');
     Route::get('/configuracoes', [PdvSettingsController::class, 'edit'])->name('modulos.configuracoes');
-    Route::put('/configuracoes', [PdvSettingsController::class, 'update'])->name('configuracoes.update');
+    Route::post('/configuracoes/logo', [PdvSettingsController::class, 'uploadLogo'])->name('configuracoes.logo');
+    Route::post('/configuracoes', [PdvSettingsController::class, 'update'])->name('configuracoes.update');
 });
 
 Route::middleware('auth')->group(function () {

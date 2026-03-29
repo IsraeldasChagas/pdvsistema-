@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdatePdvSettingsRequest;
+use App\Http\Requests\UploadPdvLogoRequest;
 use App\Models\PdvSetting;
 use App\Support\CurrentCompany;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -50,30 +52,6 @@ class PdvSettingsController extends Controller
             $settings->logo_path = null;
         }
 
-        if ($request->hasFile('logo')) {
-            $file = $request->file('logo');
-            if (! $file->isValid()) {
-                return back()
-                    ->withInput()
-                    ->withErrors([
-                        'logo' => 'O upload da imagem falhou. Verifique o tamanho (máx. 2 MB) e se o servidor permite envio (PHP: upload_max_filesize e post_max_size).',
-                    ]);
-            }
-            if ($settings->logo_path) {
-                Storage::disk('public')->delete($settings->logo_path);
-            }
-            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'png');
-            $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'png';
-            $dir = 'pdv/companies/'.$settings->company_id;
-            $path = $file->storeAs($dir, 'logo.'.$ext, 'public');
-            if ($path === false || $path === '') {
-                return back()
-                    ->withInput()
-                    ->withErrors(['logo' => 'Não foi possível gravar o arquivo no disco (permissões da pasta storage?).']);
-            }
-            $settings->logo_path = $path;
-        }
-
         $settings->comissao_percentual = round((float) $request->input('comissao_pct'), 2);
         $settings->estoque_min = (int) $request->input('estoque_min');
         $settings->formas_pagamento = $formas;
@@ -88,6 +66,60 @@ class PdvSettingsController extends Controller
         return redirect()
             ->route('modulos.configuracoes')
             ->with('status', 'Configurações salvas com sucesso.');
+    }
+
+    public function uploadLogo(UploadPdvLogoRequest $request): RedirectResponse
+    {
+        $companyId = CurrentCompany::id();
+        if ($companyId === null) {
+            abort(403, 'Nenhuma empresa no contexto.');
+        }
+
+        $settings = PdvSetting::query()->where('company_id', $companyId)->first();
+        if ($settings === null) {
+            $settings = PdvSetting::query()->create([
+                'company_id' => $companyId,
+                'comissao_percentual' => 5,
+                'estoque_min' => 10,
+                'formas_pagamento' => PdvSetting::defaultFormasPagamento(),
+            ]);
+        }
+
+        $file = $request->file('logo');
+        if (! $file instanceof UploadedFile || ! $file->isValid()) {
+            return back()->withErrors([
+                'logo' => 'O arquivo não foi recebido corretamente. Aumente upload_max_filesize e post_max_size no PHP (ex.: 10M).',
+            ]);
+        }
+
+        try {
+            $path = $this->storeLogoOnDisk($file, $settings);
+        } catch (\Throwable $e) {
+            return back()->withErrors(['logo' => 'Não foi possível salvar o logo: '.$e->getMessage()]);
+        }
+
+        $settings->logo_path = $path;
+        $settings->saveOrFail();
+
+        return redirect()
+            ->route('modulos.configuracoes')
+            ->with('status', 'Logo salvo com sucesso.');
+    }
+
+    private function storeLogoOnDisk(UploadedFile $file, PdvSetting $settings): string
+    {
+        if ($settings->logo_path) {
+            Storage::disk('public')->delete($settings->logo_path);
+        }
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'png');
+        $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'png';
+        $dir = 'pdv/companies/'.$settings->company_id;
+        $path = $file->storeAs($dir, 'logo.'.$ext, 'public');
+        if ($path === false || $path === '') {
+            throw new \RuntimeException('Falha ao gravar em storage/app/public (permissões?).');
+        }
+
+        return $path;
     }
 
     /**
