@@ -49,8 +49,27 @@
                             <span class="truncate text-sm font-medium text-gray-600">{{ \App\Support\CurrentCompany::model()?->nome ?? 'Empresa' }}</span>
                         @endif
                     </div>
-                    <div class="flex items-center gap-4">
-                        <span class="max-w-[200px] truncate text-sm font-medium text-gray-800 sm:max-w-none">{{ Auth::user()->name }}</span>
+                    <div class="flex items-center gap-3">
+                        @php
+                            $u = Auth::user();
+                            $avatar = $u->avatarUrl();
+                        @endphp
+                        @if ($avatar)
+                            <img
+                                src="{{ $avatar }}"
+                                alt=""
+                                class="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-gray-200"
+                                width="36"
+                                height="36"
+                                loading="lazy"
+                            />
+                        @else
+                            <span
+                                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700"
+                                aria-hidden="true"
+                            >{{ strtoupper(\Illuminate\Support\Str::substr($u->name, 0, 2)) }}</span>
+                        @endif
+                        <span class="max-w-[200px] truncate text-sm font-medium text-gray-800 sm:max-w-none">{{ $u->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-700">

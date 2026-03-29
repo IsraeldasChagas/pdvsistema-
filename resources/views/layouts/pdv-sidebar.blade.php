@@ -3,7 +3,7 @@
     $brandName = config('pdv.brand_name', 'PDV Sistema');
 
     if ($isSuper) {
-        $logoUrl = null;
+        $logoUrl = $pdvSetting?->logoPublicUrl();
         $financeiroSaasOpen = request()->routeIs('financeiro.saas.*');
     } else {
         $caixaAberto = auth()->check()

@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Support\CurrentCompany;
+use App\Support\PublicStorage;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Configurações do PDV por empresa.
@@ -144,6 +144,6 @@ class PdvSetting extends Model
             return null;
         }
 
-        return Storage::disk('public')->url($path);
+        return PublicStorage::url($path);
     }
 }
