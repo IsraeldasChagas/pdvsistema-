@@ -40,7 +40,7 @@ class UpdatePdvSettingsRequest extends FormRequest
             'empresa_email' => ['nullable', 'email', 'max:255'],
             'empresa_endereco' => ['nullable', 'string', 'max:500'],
             'nome_loja' => ['nullable', 'string', 'max:255'],
-            'logo' => ['nullable', 'file', 'image', 'max:2048'],
+            'logo' => ['nullable', 'file', 'max:2048', 'mimes:jpeg,jpg,png,gif,webp,svg'],
             'remover_logo' => ['sometimes', 'boolean'],
         ];
     }

@@ -39,9 +39,11 @@ class PdvSettingsController extends Controller
             if ($settings->logo_path) {
                 Storage::disk('public')->delete($settings->logo_path);
             }
-            $ext = $request->file('logo')->getClientOriginalExtension() ?: 'png';
-            $ext = strtolower(preg_replace('/[^a-z0-9]/', '', $ext) ?? 'png') ?: 'png';
-            $path = $request->file('logo')->storeAs('pdv', 'logo.'.$ext, 'public');
+            $file = $request->file('logo');
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'png');
+            $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'png';
+            $dir = 'pdv/companies/'.$settings->company_id;
+            $path = $file->storeAs($dir, 'logo.'.$ext, 'public');
             $settings->logo_path = $path;
         }
 
