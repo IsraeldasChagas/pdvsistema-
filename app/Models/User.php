@@ -9,7 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -88,7 +91,54 @@ class User extends Authenticatable
             return null;
         }
 
-        return PublicStorage::url($this->avatar_path);
+        $path = $this->avatar_path;
+
+        // Legado: storage/app/public/users/avatars/... (exige public/storage)
+        if (str_starts_with($path, 'users/avatars/')) {
+            return PublicStorage::url($path);
+        }
+
+        // Atual: public/pdv/user-avatars/...
+        $path = ltrim($path, '/');
+        if (! app()->runningInConsole() && request()->hasHeader('Host')) {
+            $base = rtrim(request()->getSchemeAndHttpHost().request()->getBasePath(), '/');
+
+            return $base.'/pdv/'.$path;
+        }
+
+        return asset('pdv/'.$path);
+    }
+
+    /**
+     * Remove arquivo de avatar (formato novo ou legado).
+     */
+    public static function deleteStoredAvatarFile(?string $path): void
+    {
+        if ($path === null || $path === '') {
+            return;
+        }
+        if (str_starts_with($path, 'users/avatars/')) {
+            Storage::disk('public')->delete($path);
+
+            return;
+        }
+        Storage::disk('pdv_public')->delete($path);
+    }
+
+    /**
+     * Grava upload em public/pdv/user-avatars/ e retorna o caminho relativo ao disco.
+     */
+    public static function storeAvatarFile(UploadedFile $file): string
+    {
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+        $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'jpg';
+        $name = Str::uuid()->toString().'.'.$ext;
+        $path = $file->storeAs('user-avatars', $name, 'pdv_public');
+        if ($path === false || $path === '') {
+            throw new \RuntimeException('Falha ao gravar foto em public/pdv (permissões ou disco cheio?).');
+        }
+
+        return $path;
     }
 
     /**

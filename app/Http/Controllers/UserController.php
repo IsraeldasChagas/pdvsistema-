@@ -8,7 +8,6 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -65,7 +64,14 @@ class UserController extends Controller
         $user->syncAllowedScreensFromInput($request->input('screens', []), $data['role']);
 
         if ($request->hasFile('avatar')) {
-            $user->avatar_path = $request->file('avatar')->store('users/avatars', 'public');
+            try {
+                $user->avatar_path = User::storeAvatarFile($request->file('avatar'));
+            } catch (\Throwable $e) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['avatar' => 'Não foi possível salvar a foto: '.$e->getMessage()]);
+            }
         }
 
         $user->save();
@@ -118,14 +124,17 @@ class UserController extends Controller
         $user->syncAllowedScreensFromInput($request->input('screens', []), $data['role']);
 
         if ($request->hasFile('avatar')) {
-            if ($user->avatar_path) {
-                Storage::disk('public')->delete($user->avatar_path);
+            try {
+                User::deleteStoredAvatarFile($user->avatar_path);
+                $user->avatar_path = User::storeAvatarFile($request->file('avatar'));
+            } catch (\Throwable $e) {
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(['avatar' => 'Não foi possível salvar a foto: '.$e->getMessage()]);
             }
-            $user->avatar_path = $request->file('avatar')->store('users/avatars', 'public');
         } elseif ($request->boolean('remover_foto')) {
-            if ($user->avatar_path) {
-                Storage::disk('public')->delete($user->avatar_path);
-            }
+            User::deleteStoredAvatarFile($user->avatar_path);
             $user->avatar_path = null;
         }
 
@@ -150,9 +159,7 @@ class UserController extends Controller
                 ->withErrors(['delete' => 'Você não pode excluir sua própria conta.']);
         }
 
-        if ($user->avatar_path) {
-            Storage::disk('public')->delete($user->avatar_path);
-        }
+        User::deleteStoredAvatarFile($user->avatar_path);
 
         $user->delete();
 

@@ -52,7 +52,7 @@ class UpdateUserRequest extends FormRequest
             ],
             'screens.*' => ['string', Rule::in($keys)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'avatar' => ['nullable', 'image', 'max:2048'],
+            'avatar' => ['nullable', 'file', 'max:2048', 'mimes:jpeg,jpg,png,gif,webp'],
             'remover_foto' => ['sometimes', 'boolean'],
         ];
     }
