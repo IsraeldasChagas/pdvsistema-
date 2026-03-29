@@ -1,6 +1,8 @@
 @php
     $isSuper = auth()->user()->isSuperAdmin();
     $brandName = config('pdv.brand_name', 'PDV Sistema');
+    $barraTitulo = ! empty($empresaNomeOperacao) ? $empresaNomeOperacao : $brandName;
+    $barraIniciais = strtoupper(\Illuminate\Support\Str::substr($barraTitulo, 0, 2));
 
     if ($isSuper) {
         $logoUrl = $pdvSetting?->logoPublicUrl();
@@ -54,21 +56,16 @@
                         data-logo-fallback
                         aria-hidden="true"
                     >
-                        {{ strtoupper(Str::substr($brandName, 0, 2)) }}
+                        {{ $barraIniciais }}
                     </div>
                 </div>
             @else
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white">
-                    {{ strtoupper(Str::substr($brandName, 0, 2)) }}
+                    {{ $barraIniciais }}
                 </div>
             @endif
             <div class="min-w-0 flex-1">
-                <span class="block truncate text-lg font-semibold tracking-tight text-white">{{ $brandName }}</span>
-                @if (! empty($empresaNomeOperacao))
-                    <span class="mt-0.5 block truncate text-xs font-medium text-slate-400" title="{{ $empresaNomeOperacao }}">
-                        {{ $empresaNomeOperacao }}
-                    </span>
-                @endif
+                <span class="block truncate text-lg font-semibold tracking-tight text-white" title="{{ $barraTitulo }}">{{ $barraTitulo }}</span>
             </div>
         </div>
     </div>

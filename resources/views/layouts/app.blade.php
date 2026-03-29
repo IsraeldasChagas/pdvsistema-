@@ -5,7 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'PDV Sistema') }}</title>
+        <title>
+            @if (! empty($empresaNomeOperacao))
+                {{ $empresaNomeOperacao }}
+            @else
+                {{ config('app.name', 'PDV Sistema') }}
+            @endif
+        </title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
@@ -29,15 +35,15 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                             </svg>
                         </button>
-                        <span class="shrink-0 font-bold tracking-tight text-gray-900">{{ config('pdv.brand_name') }}</span>
                         @if (! empty($empresaNomeOperacao))
-                            <span class="hidden h-5 w-px shrink-0 bg-gray-200 sm:block" aria-hidden="true"></span>
                             <span
-                                class="min-w-0 max-w-[min(100%,14rem)] truncate text-sm font-semibold text-emerald-800 sm:max-w-[min(100%,20rem)]"
-                                title="Empresa: {{ $empresaNomeOperacao }}"
+                                class="min-w-0 max-w-[min(100%,14rem)] truncate text-base font-bold tracking-tight text-gray-900 sm:max-w-[min(100%,24rem)] sm:text-lg"
+                                title="{{ $empresaNomeOperacao }}"
                             >
                                 {{ $empresaNomeOperacao }}
                             </span>
+                        @else
+                            <span class="shrink-0 font-bold tracking-tight text-gray-900">{{ config('pdv.brand_name') }}</span>
                         @endif
                         @if (auth()->user()->isSuperAdmin() && isset($empresasSwitcher) && $empresasSwitcher->isNotEmpty())
                             <form method="post" action="{{ route('empresa.context') }}" class="ml-1 flex min-w-0 flex-1 items-center gap-2 sm:ml-2">
