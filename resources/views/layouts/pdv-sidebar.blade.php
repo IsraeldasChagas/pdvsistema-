@@ -29,7 +29,7 @@
             ['route' => 'modulos.usuarios', 'label' => 'Usuários', 'icon' => 'users', 'routes' => ['modulos.usuarios', 'usuarios.*'], 'hint' => null],
             ['route' => 'modulos.configuracoes', 'label' => 'Configurações', 'icon' => 'settings', 'routes' => ['modulos.configuracoes'], 'hint' => null],
         ];
-        $logoUrl = $pdvSetting->logoPublicUrl();
+        $logoUrl = $pdvSetting?->logoPublicUrl();
     }
 @endphp
 

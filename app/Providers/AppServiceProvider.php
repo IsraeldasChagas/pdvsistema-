@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Company;
 use App\Models\PdvSetting;
+use App\Support\CurrentCompany;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
@@ -45,7 +46,12 @@ class AppServiceProvider extends ServiceProvider
                 );
             }
 
-            $view->with('pdvSetting', PdvSetting::current());
+            // Só carrega PDV quando há empresa no contexto; senão PdvSetting::current() quebra (500).
+            $companyId = CurrentCompany::id();
+            $view->with(
+                'pdvSetting',
+                $companyId !== null ? PdvSetting::current() : null
+            );
         });
     }
 }
