@@ -11,6 +11,17 @@
             <p class="text-sm text-gray-500">{{ $contextoNome }}</p>
             <h1 class="mt-1 text-3xl font-bold tracking-tight text-gray-900">Nova Empresa</h1>
 
+            @if ($errors->any())
+                <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                    <p class="font-semibold">Não foi possível cadastrar. Corrija:</p>
+                    <ul class="mt-2 list-inside list-disc space-y-0.5">
+                        @foreach ($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('empresas.store') }}" method="post" class="mt-8 space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
                 @csrf
 

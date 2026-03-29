@@ -13,6 +13,15 @@ class StoreCompanyRequest extends FormRequest
         return $this->user()?->isSuperAdmin() ?? false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $raw = $this->input('allowed_screens');
+        $keys = Company::tenantSelectableScreenKeys();
+        if (! is_array($raw) || $raw === [] || count(array_filter($raw, fn ($v) => $v !== null && $v !== '')) === 0) {
+            $this->merge(['allowed_screens' => $keys]);
+        }
+    }
+
     /**
      * @return array<string, mixed>
      */

@@ -38,7 +38,8 @@ class CompanyController extends Controller
                 'telefone' => $data['telefone'] ?? null,
                 'email' => $data['email'] ?? null,
                 'ativo' => true,
-                'allowed_screens' => $telas,
+                'billing_blocked' => false,
+                'allowed_screens' => $telas !== [] ? $telas : Company::tenantSelectableScreenKeys(),
             ]);
 
             User::query()->create([
