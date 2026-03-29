@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdatePdvSettingsRequest;
 use App\Models\PdvSetting;
+use App\Support\CurrentCompany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -23,7 +24,21 @@ class PdvSettingsController extends Controller
 
     public function update(UpdatePdvSettingsRequest $request): RedirectResponse
     {
-        $settings = PdvSetting::current();
+        $companyId = CurrentCompany::id();
+        if ($companyId === null) {
+            abort(403, 'Nenhuma empresa no contexto.');
+        }
+
+        /** @var PdvSetting $settings */
+        $settings = PdvSetting::query()->where('company_id', $companyId)->first();
+        if ($settings === null) {
+            $settings = PdvSetting::query()->create([
+                'company_id' => $companyId,
+                'comissao_percentual' => 5,
+                'estoque_min' => 10,
+                'formas_pagamento' => PdvSetting::defaultFormasPagamento(),
+            ]);
+        }
 
         $formas = $this->parseFormasPagamentoCsv($request->input('formas_pagamento', ''));
         if ($formas === []) {
@@ -36,14 +51,26 @@ class PdvSettingsController extends Controller
         }
 
         if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            if (! $file->isValid()) {
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'logo' => 'O upload da imagem falhou. Verifique o tamanho (máx. 2 MB) e se o servidor permite envio (PHP: upload_max_filesize e post_max_size).',
+                    ]);
+            }
             if ($settings->logo_path) {
                 Storage::disk('public')->delete($settings->logo_path);
             }
-            $file = $request->file('logo');
             $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'png');
             $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'png';
             $dir = 'pdv/companies/'.$settings->company_id;
             $path = $file->storeAs($dir, 'logo.'.$ext, 'public');
+            if ($path === false || $path === '') {
+                return back()
+                    ->withInput()
+                    ->withErrors(['logo' => 'Não foi possível gravar o arquivo no disco (permissões da pasta storage?).']);
+            }
             $settings->logo_path = $path;
         }
 
@@ -56,7 +83,7 @@ class PdvSettingsController extends Controller
         $settings->empresa_email = $request->input('empresa_email');
         $settings->empresa_endereco = $request->input('empresa_endereco');
         $settings->nome_loja = $request->input('nome_loja');
-        $settings->save();
+        $settings->saveOrFail();
 
         return redirect()
             ->route('modulos.configuracoes')
