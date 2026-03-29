@@ -49,7 +49,7 @@ return [
         ['patterns' => ['modulos.caixa', 'caixa.*'], 'screen' => 'caixa'],
         ['patterns' => ['modulos.comissoes', 'comissoes.*'], 'screen' => 'comissoes'],
         ['patterns' => ['modulos.relatorios'], 'screen' => 'relatorios'],
-        ['patterns' => ['modulos.configuracoes'], 'screen' => 'configuracoes'],
+        ['patterns' => ['modulos.configuracoes', 'configuracoes.*'], 'screen' => 'configuracoes'],
         ['patterns' => ['empresas.*'], 'screen' => 'empresas'],
         ['patterns' => ['financeiro.saas', 'financeiro.saas.dashboard', 'financeiro.saas.empresas', 'financeiro.saas.empresas.show', 'financeiro.saas.planos', 'financeiro.saas.plans.*', 'financeiro.saas.cobrancas', 'financeiro.saas.charges.*'], 'screen' => 'financeiro_saas'],
     ],

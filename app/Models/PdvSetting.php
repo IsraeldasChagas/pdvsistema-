@@ -51,24 +51,22 @@ class PdvSetting extends Model
 
     public static function current(): self
     {
-        return once(function () {
-            $cid = CurrentCompany::id();
-            if ($cid === null) {
-                throw new \RuntimeException('Nenhuma empresa no contexto atual.');
-            }
+        $cid = CurrentCompany::id();
+        if ($cid === null) {
+            throw new \RuntimeException('Nenhuma empresa no contexto atual.');
+        }
 
-            $row = static::query()->where('company_id', $cid)->first();
-            if ($row !== null) {
-                return $row;
-            }
+        $row = static::query()->where('company_id', $cid)->first();
+        if ($row !== null) {
+            return $row;
+        }
 
-            return static::query()->create([
-                'company_id' => $cid,
-                'comissao_percentual' => 5,
-                'estoque_min' => 10,
-                'formas_pagamento' => self::defaultFormasPagamento(),
-            ]);
-        });
+        return static::query()->create([
+            'company_id' => $cid,
+            'comissao_percentual' => 5,
+            'estoque_min' => 10,
+            'formas_pagamento' => self::defaultFormasPagamento(),
+        ]);
     }
 
     /**
