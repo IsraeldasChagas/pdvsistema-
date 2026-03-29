@@ -85,7 +85,6 @@
                                         name="logo"
                                         accept=".png,.jpg,.jpeg,.gif,.svg,.webp,image/*"
                                         class="sr-only"
-                                        required
                                     />
                                 </label>
                                 <button

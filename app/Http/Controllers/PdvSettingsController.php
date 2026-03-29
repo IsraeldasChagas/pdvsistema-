@@ -8,7 +8,6 @@ use App\Models\PdvSetting;
 use App\Support\CurrentCompany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -48,7 +47,7 @@ class PdvSettingsController extends Controller
         }
 
         if ($request->boolean('remover_logo') && $settings->logo_path) {
-            Storage::disk('public')->delete($settings->logo_path);
+            PdvSetting::deleteStoredLogoFile($settings->logo_path);
             $settings->logo_path = null;
         }
 
@@ -108,15 +107,14 @@ class PdvSettingsController extends Controller
 
     private function storeLogoOnDisk(UploadedFile $file, PdvSetting $settings): string
     {
-        if ($settings->logo_path) {
-            Storage::disk('public')->delete($settings->logo_path);
-        }
+        PdvSetting::deleteStoredLogoFile($settings->logo_path);
+
         $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'png');
         $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'png';
-        $dir = 'pdv/companies/'.$settings->company_id;
-        $path = $file->storeAs($dir, 'logo.'.$ext, 'public');
+        $dir = 'companies/'.$settings->company_id;
+        $path = $file->storeAs($dir, 'logo.'.$ext, 'pdv_public');
         if ($path === false || $path === '') {
-            throw new \RuntimeException('Falha ao gravar em storage/app/public (permissões?).');
+            throw new \RuntimeException('Falha ao gravar em public/pdv (permissões ou disco cheio?).');
         }
 
         return $path;

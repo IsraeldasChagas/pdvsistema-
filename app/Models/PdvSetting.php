@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Support\CurrentCompany;
 use App\Support\PublicStorage;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Configurações do PDV por empresa.
@@ -142,6 +143,35 @@ class PdvSetting extends Model
             return null;
         }
 
-        return PublicStorage::url($path);
+        // Legado: arquivo em storage/app/public (exige public/storage)
+        if (str_starts_with($path, 'pdv/companies/')) {
+            return PublicStorage::url($path);
+        }
+
+        // Atual: arquivo em public/pdv/...
+        $path = ltrim($path, '/');
+        if (! app()->runningInConsole() && request()->hasHeader('Host')) {
+            $base = rtrim(request()->getSchemeAndHttpHost().request()->getBasePath(), '/');
+
+            return $base.'/pdv/'.$path;
+        }
+
+        return asset('pdv/'.$path);
+    }
+
+    /**
+     * Remove o arquivo do logo do disco (formato novo ou legado).
+     */
+    public static function deleteStoredLogoFile(?string $path): void
+    {
+        if ($path === null || $path === '') {
+            return;
+        }
+        if (str_starts_with($path, 'pdv/companies/')) {
+            Storage::disk('public')->delete($path);
+
+            return;
+        }
+        Storage::disk('pdv_public')->delete($path);
     }
 }

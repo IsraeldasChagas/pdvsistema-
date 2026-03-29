@@ -17,7 +17,12 @@ class UploadPdvLogoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'logo' => ['required', 'file', 'max:10240', 'image:allow_svg'],
+            'logo' => [
+                'required',
+                'file',
+                'max:10240',
+                'mimes:jpeg,jpg,png,gif,webp,svg',
+            ],
         ];
     }
 
@@ -29,7 +34,7 @@ class UploadPdvLogoRequest extends FormRequest
         return [
             'logo.required' => 'Escolha um arquivo de imagem.',
             'logo.max' => 'A imagem não pode passar de 10 MB.',
-            'logo.image' => 'O arquivo precisa ser uma imagem (PNG, JPG, GIF, WebP, SVG, etc.).',
+            'logo.mimes' => 'Use PNG, JPG, GIF, WebP ou SVG.',
         ];
     }
 }

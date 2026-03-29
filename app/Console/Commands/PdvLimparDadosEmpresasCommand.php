@@ -125,6 +125,7 @@ class PdvLimparDadosEmpresasCommand extends Command
         DB::table('saas_charges')->where('company_id', $companyId)->delete();
 
         PdvSetting::query()->where('company_id', $companyId)->get()->each(function (PdvSetting $row): void {
+            PdvSetting::deleteStoredLogoFile($row->logo_path);
             $row->update([
                 'comissao_percentual' => 5,
                 'estoque_min' => 10,

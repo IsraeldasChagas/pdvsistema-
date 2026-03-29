@@ -47,6 +47,17 @@ return [
             'report' => false,
         ],
 
+        /*
+         * Logos do PDV em public/pdv — acessíveis como /pdv/... sem symlink storage.
+         */
+        'pdv_public' => [
+            'driver' => 'local',
+            'root' => public_path('pdv'),
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
