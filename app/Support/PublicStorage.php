@@ -5,9 +5,9 @@ namespace App\Support;
 /**
  * URLs de arquivos em storage/app/public (expostos via public/storage).
  *
- * Usa caminho relativo "/storage/..." para o navegador sempre pedir no mesmo
- * host/protocolo da página (evita imagem quebrada quando APP_URL está em http
- * e o site em https, ou domínio diferente do .env).
+ * Em requisições HTTP, usa o mesmo esquema/host (e subpasta, se houver) da
+ * requisição atual, para não depender de APP_URL no .env (comum em HTTPS).
+ * Fora de HTTP (ex.: e-mail/console), usa asset().
  */
 final class PublicStorage
 {
@@ -19,6 +19,12 @@ final class PublicStorage
 
         $path = ltrim($path, '/');
 
-        return '/storage/'.$path;
+        if (! app()->runningInConsole() && request()->hasHeader('Host')) {
+            $base = rtrim(request()->getSchemeAndHttpHost().request()->getBasePath(), '/');
+
+            return $base.'/storage/'.$path;
+        }
+
+        return asset('storage/'.$path);
     }
 }

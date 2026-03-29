@@ -39,7 +39,23 @@
 >
     <div class="flex h-16 shrink-0 items-center gap-3 border-b border-slate-800 px-4">
         @if ($logoUrl)
-            <img src="{{ $logoUrl }}" alt="{{ $brandName }}" class="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-slate-600" />
+            <div class="relative h-10 w-10 shrink-0">
+                <img
+                    src="{{ $logoUrl }}"
+                    alt=""
+                    class="h-10 w-10 rounded-full object-cover ring-1 ring-slate-600"
+                    loading="lazy"
+                    decoding="async"
+                    onerror="this.classList.add('hidden'); this.nextElementSibling?.classList.remove('hidden')"
+                />
+                <div
+                    class="absolute inset-0 hidden inline-flex items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white ring-1 ring-slate-600"
+                    data-logo-fallback
+                    aria-hidden="true"
+                >
+                    {{ strtoupper(Str::substr($brandName, 0, 2)) }}
+                </div>
+            </div>
         @else
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white">
                 {{ strtoupper(Str::substr($brandName, 0, 2)) }}
