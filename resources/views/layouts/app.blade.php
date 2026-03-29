@@ -30,10 +30,19 @@
                             </svg>
                         </button>
                         <span class="shrink-0 font-bold tracking-tight text-gray-900">{{ config('pdv.brand_name') }}</span>
+                        @if (! empty($empresaNomeOperacao))
+                            <span class="hidden h-5 w-px shrink-0 bg-gray-200 sm:block" aria-hidden="true"></span>
+                            <span
+                                class="min-w-0 max-w-[min(100%,14rem)] truncate text-sm font-semibold text-emerald-800 sm:max-w-[min(100%,20rem)]"
+                                title="Empresa: {{ $empresaNomeOperacao }}"
+                            >
+                                {{ $empresaNomeOperacao }}
+                            </span>
+                        @endif
                         @if (auth()->user()->isSuperAdmin() && isset($empresasSwitcher) && $empresasSwitcher->isNotEmpty())
-                            <form method="post" action="{{ route('empresa.context') }}" class="flex min-w-0 flex-1 items-center gap-2">
+                            <form method="post" action="{{ route('empresa.context') }}" class="ml-1 flex min-w-0 flex-1 items-center gap-2 sm:ml-2">
                                 @csrf
-                                <label for="header_company_id" class="sr-only">Empresa</label>
+                                <label for="header_company_id" class="sr-only">Trocar empresa</label>
                                 <select
                                     id="header_company_id"
                                     name="company_id"
@@ -45,8 +54,6 @@
                                     @endforeach
                                 </select>
                             </form>
-                        @elseif (auth()->user()->isSuperAdmin())
-                            <span class="truncate text-sm font-medium text-gray-600">{{ \App\Support\CurrentCompany::model()?->nome ?? 'Empresa' }}</span>
                         @endif
                     </div>
                     <div class="flex items-center gap-3">

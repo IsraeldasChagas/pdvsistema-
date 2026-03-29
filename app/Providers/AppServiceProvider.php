@@ -48,10 +48,19 @@ class AppServiceProvider extends ServiceProvider
 
             // Só carrega PDV quando há empresa no contexto; senão PdvSetting::current() quebra (500).
             $companyId = CurrentCompany::id();
-            $view->with(
-                'pdvSetting',
-                $companyId !== null ? PdvSetting::current() : null
-            );
+            $pdvSetting = $companyId !== null ? PdvSetting::current() : null;
+
+            $empresaNomeOperacao = null;
+            if ($companyId !== null) {
+                $companyModel = CurrentCompany::model();
+                if ($companyModel !== null) {
+                    $fromConfig = trim((string) ($pdvSetting?->empresa_nome ?? ''));
+                    $empresaNomeOperacao = $fromConfig !== '' ? $fromConfig : $companyModel->nome;
+                }
+            }
+
+            $view->with('pdvSetting', $pdvSetting);
+            $view->with('empresaNomeOperacao', $empresaNomeOperacao);
         });
     }
 }

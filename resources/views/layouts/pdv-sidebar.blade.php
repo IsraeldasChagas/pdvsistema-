@@ -37,31 +37,40 @@
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
     class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-800 bg-[#0c1929] transition-transform duration-200 ease-out lg:static"
 >
-    <div class="flex h-16 shrink-0 items-center gap-3 border-b border-slate-800 px-4">
-        @if ($logoUrl)
-            <div class="relative h-10 w-10 shrink-0">
-                <img
-                    src="{{ $logoUrl }}"
-                    alt=""
-                    class="h-10 w-10 rounded-full object-cover ring-1 ring-slate-600"
-                    loading="lazy"
-                    decoding="async"
-                    onerror="this.classList.add('hidden'); this.nextElementSibling?.classList.remove('hidden')"
-                />
-                <div
-                    class="absolute inset-0 hidden inline-flex items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white ring-1 ring-slate-600"
-                    data-logo-fallback
-                    aria-hidden="true"
-                >
+    <div class="flex min-h-16 shrink-0 flex-col justify-center gap-1 border-b border-slate-800 px-4 py-3">
+        <div class="flex items-center gap-3">
+            @if ($logoUrl)
+                <div class="relative h-10 w-10 shrink-0">
+                    <img
+                        src="{{ $logoUrl }}"
+                        alt=""
+                        class="h-10 w-10 rounded-full object-cover ring-1 ring-slate-600"
+                        loading="lazy"
+                        decoding="async"
+                        onerror="this.classList.add('hidden'); this.nextElementSibling?.classList.remove('hidden')"
+                    />
+                    <div
+                        class="absolute inset-0 hidden inline-flex items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white ring-1 ring-slate-600"
+                        data-logo-fallback
+                        aria-hidden="true"
+                    >
+                        {{ strtoupper(Str::substr($brandName, 0, 2)) }}
+                    </div>
+                </div>
+            @else
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white">
                     {{ strtoupper(Str::substr($brandName, 0, 2)) }}
                 </div>
+            @endif
+            <div class="min-w-0 flex-1">
+                <span class="block truncate text-lg font-semibold tracking-tight text-white">{{ $brandName }}</span>
+                @if (! empty($empresaNomeOperacao))
+                    <span class="mt-0.5 block truncate text-xs font-medium text-slate-400" title="{{ $empresaNomeOperacao }}">
+                        {{ $empresaNomeOperacao }}
+                    </span>
+                @endif
             </div>
-        @else
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white">
-                {{ strtoupper(Str::substr($brandName, 0, 2)) }}
-            </div>
-        @endif
-        <span class="truncate text-lg font-semibold tracking-tight text-white">{{ $brandName }}</span>
+        </div>
     </div>
 
     <nav class="flex-1 space-y-0.5 overflow-y-auto px-2 py-4">
