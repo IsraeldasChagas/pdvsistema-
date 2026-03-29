@@ -7,49 +7,49 @@
 }
 
 @layer components {
-    /* Azul clarinho no repouso; cor forte só ao pressionar (:active) ou foco no teclado */
+    /* Repouso = azul “ativo” (sem clicar); ao clicar (:active) = fundo branco */
     .btn-pdv {
         @apply inline-flex items-center justify-center rounded border px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors duration-100 ease-out;
-        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1;
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-1;
     }
 
     .btn-pdv-primary {
-        @apply border-blue-200 bg-sky-100 text-blue-950;
-        @apply active:border-blue-700 active:bg-blue-600 active:text-white;
+        @apply border-blue-700 bg-blue-600 text-white;
+        @apply active:border-gray-300 active:bg-white active:text-blue-900;
     }
 
     .btn-pdv-secondary {
-        @apply border-blue-200 bg-sky-50 text-blue-900;
-        @apply active:border-blue-700 active:bg-blue-600 active:text-white;
+        @apply border-blue-700 bg-blue-600 text-white;
+        @apply active:border-gray-300 active:bg-white active:text-blue-900;
     }
 
     .btn-pdv-gray {
-        @apply border-blue-200 bg-sky-50 text-blue-900;
-        @apply active:border-blue-700 active:bg-blue-600 active:text-white;
+        @apply border-blue-700 bg-blue-600 text-white;
+        @apply active:border-gray-300 active:bg-white active:text-blue-900;
     }
 
     .btn-pdv-emerald {
-        @apply border-blue-200 bg-sky-100 text-blue-950;
-        @apply active:border-blue-700 active:bg-blue-600 active:text-white;
+        @apply border-blue-700 bg-blue-600 text-white;
+        @apply active:border-gray-300 active:bg-white active:text-blue-900;
     }
 
     .btn-pdv-ghost {
-        @apply inline-flex items-center justify-center rounded border border-transparent px-3 py-2 text-sm font-semibold transition-colors duration-100 ease-out;
-        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1;
+        @apply inline-flex items-center justify-center rounded border px-3 py-2 text-sm font-semibold transition-colors duration-100 ease-out;
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-1;
     }
 
     .btn-pdv-ghost-neutral {
-        @apply text-blue-800;
-        @apply active:bg-blue-600 active:text-white;
+        @apply border-blue-700 bg-blue-600 text-white;
+        @apply active:border-gray-300 active:bg-white active:text-blue-900;
     }
 
     .btn-pdv-ghost-blue {
-        @apply text-blue-700;
-        @apply active:bg-blue-600 active:text-white;
+        @apply border-blue-700 bg-blue-600 text-white;
+        @apply active:border-gray-300 active:bg-white active:text-blue-900;
     }
 
     .btn-pdv-ghost-red {
-        @apply text-red-600;
-        @apply active:bg-red-600 active:text-white;
+        @apply border-red-700 bg-red-600 text-white;
+        @apply active:border-gray-300 active:bg-white active:text-red-700;
     }
 }
