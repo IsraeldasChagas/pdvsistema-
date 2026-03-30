@@ -86,22 +86,13 @@
                                     <form
                                         action="{{ route('financeiro.categorias_despesas_fixas.store') }}"
                                         method="post"
-                                        class="px-10 py-8 sm:px-14 sm:py-12"
+                                        class="px-10 py-8 pb-10 sm:px-14 sm:py-12 sm:pb-14"
                                     >
                                         @csrf
                                         <div class="mx-auto max-w-md space-y-6">
-                                            <div class="flex items-start justify-between gap-4">
-                                                <div class="min-w-0 space-y-1.5">
-                                                    <h3 class="text-lg font-bold tracking-tight text-gray-900">Nova categoria</h3>
-                                                    <p class="text-sm leading-relaxed text-gray-500">Cria a categoria e já volta selecionada.</p>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    class="shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
-                                                    @click="showCatModal = false"
-                                                >
-                                                    Fechar
-                                                </button>
+                                            <div class="space-y-1.5">
+                                                <h3 class="text-lg font-bold tracking-tight text-gray-900">Nova categoria</h3>
+                                                <p class="text-sm leading-relaxed text-gray-500">Cria a categoria e já volta selecionada.</p>
                                             </div>
                                             <div class="space-y-1.5">
                                                 <label for="cat_nome" class="block text-sm font-bold text-gray-900">Nome</label>
