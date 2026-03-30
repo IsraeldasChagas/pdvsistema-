@@ -33,7 +33,7 @@
     @endphp
 
     @if ($logoImagem !== null)
-        <div class="mb-2 flex justify-center">
+        <div class="mb-1 flex justify-center">
             <img
                 src="{{ asset($logoImagem) }}?v={{ (string) filemtime(public_path($logoImagem)) }}"
                 alt="{{ config('app.name', 'PDV') }}"
@@ -44,7 +44,7 @@
         </div>
     @endif
 
-    <p class="mb-3 text-center text-sm text-gray-500">Entre com seu e-mail e senha</p>
+    <p class="mb-1 text-center text-sm text-gray-500">Entre com seu e-mail e senha</p>
 
     <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
@@ -85,17 +85,4 @@
             Entrar
         </button>
     </form>
-
-    <p class="mt-8 text-center text-sm text-gray-600">
-        Não tem conta?
-        @if (Route::has('register'))
-            <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500">Cadastrar empresa</a>
-        @endif
-    </p>
-
-    @if (Route::has('password.request'))
-        <p class="mt-3 text-center text-xs text-gray-500">
-            <a href="{{ route('password.request') }}" class="text-gray-500 underline hover:text-gray-700">Esqueceu a senha?</a>
-        </p>
-    @endif
 </x-login-layout>
