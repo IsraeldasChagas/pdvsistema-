@@ -190,7 +190,8 @@ class User extends Authenticatable
 
     public function defaultScreensCheckedForForm(): array
     {
-        return ['dashboard', 'produtos', 'mini_pdv'];
+        // Defaults para novos usuários (vendedor/gerente). Admin e super-admin ignoram isso (têm acesso total).
+        return ['dashboard', 'produtos', 'mini_pdv', 'financeiro'];
     }
 
     public function screensCheckedForForm(): array
