@@ -27,6 +27,15 @@
             ['route' => 'modulos.venda', 'label' => 'Mini PDV', 'icon' => 'pdv', 'hint' => $pdvHint, 'routes' => ['modulos.venda']],
             ['route' => 'modulos.caixa', 'label' => 'Caixa', 'icon' => 'cash', 'routes' => ['modulos.caixa'], 'hint' => null],
             ['route' => 'modulos.comissoes', 'label' => 'Comissões', 'icon' => 'coin', 'routes' => ['modulos.comissoes', 'comissoes.*'], 'hint' => null],
+            [
+                'label' => 'Financeiro',
+                'icon' => 'card',
+                'routes' => ['financeiro.*'],
+                'children' => [
+                    ['route' => 'financeiro.despesas_fixas', 'label' => 'Despesas Fixas', 'icon' => 'clipboard-plan', 'routes' => ['financeiro.despesas_fixas']],
+                    ['route' => 'financeiro.despesas_variaveis', 'label' => 'Despesas Variáveis', 'icon' => 'coin', 'routes' => ['financeiro.despesas_variaveis']],
+                ],
+            ],
             ['route' => 'modulos.relatorios', 'label' => 'Relatórios', 'icon' => 'chart', 'routes' => ['modulos.relatorios'], 'hint' => null],
             ['route' => 'modulos.usuarios', 'label' => 'Usuários', 'icon' => 'users', 'routes' => ['modulos.usuarios', 'usuarios.*'], 'hint' => null],
             ['route' => 'modulos.configuracoes', 'label' => 'Configurações', 'icon' => 'settings', 'routes' => ['modulos.configuracoes'], 'hint' => null],
@@ -146,19 +155,58 @@
                 @php
                     $active = collect($item['routes'])->contains(fn ($r) => request()->routeIs($r));
                 @endphp
-                <a
-                    href="{{ route($item['route']) }}"
-                    @click="sidebarOpen = false"
-                    class="{{ $active ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white' }} group flex flex-col rounded-r-lg py-2.5 pl-3 pr-2 text-sm font-medium transition-colors"
-                >
-                    <span class="flex items-center gap-3">
-                        @include('layouts.partials.sidebar-icon', ['name' => $item['icon'], 'active' => $active])
-                        {{ $item['label'] }}
-                    </span>
-                    @if (! empty($item['hint']))
-                        <span class="mt-0.5 pl-8 text-xs font-normal text-amber-300/90">{{ $item['hint'] }}</span>
-                    @endif
-                </a>
+                @if (isset($item['children']))
+                    <div x-data="{ open: {{ $active ? 'true' : 'false' }} }" class="space-y-0.5">
+                        <button
+                            type="button"
+                            @click="open = !open"
+                            class="{{ $active ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white' }} group flex w-full items-center gap-2 rounded-r-lg py-2.5 pl-2 pr-2 text-left text-sm font-medium transition-colors"
+                        >
+                            <svg
+                                class="h-4 w-4 shrink-0 text-current transition-transform"
+                                :class="open ? '' : '-rotate-90'"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M12 16.5l-6-6h12l-6 6z" />
+                            </svg>
+                            <span class="flex min-w-0 flex-1 items-center gap-3">
+                                @include('layouts.partials.sidebar-icon', ['name' => $item['icon'], 'active' => $active])
+                                <span class="truncate">{{ $item['label'] }}</span>
+                            </span>
+                        </button>
+                        <div x-show="open" x-cloak class="mt-0.5 space-y-0.5 border-l border-slate-700/80 pl-2 ml-3">
+                            @foreach ($item['children'] as $sub)
+                                @php
+                                    $subActive = collect($sub['routes'])->contains(fn ($r) => request()->routeIs($r));
+                                @endphp
+                                <a
+                                    href="{{ route($sub['route']) }}"
+                                    @click="sidebarOpen = false"
+                                    class="{{ $subActive ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-400 hover:bg-slate-800/70 hover:text-white' }} group flex items-center gap-3 rounded-r-lg py-2 pl-3 pr-2 text-sm font-medium transition-colors"
+                                >
+                                    @include('layouts.partials.sidebar-icon', ['name' => $sub['icon'], 'active' => $subActive])
+                                    {{ $sub['label'] }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @else
+                    <a
+                        href="{{ route($item['route']) }}"
+                        @click="sidebarOpen = false"
+                        class="{{ $active ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white' }} group flex flex-col rounded-r-lg py-2.5 pl-3 pr-2 text-sm font-medium transition-colors"
+                    >
+                        <span class="flex items-center gap-3">
+                            @include('layouts.partials.sidebar-icon', ['name' => $item['icon'], 'active' => $active])
+                            {{ $item['label'] }}
+                        </span>
+                        @if (! empty($item['hint']))
+                            <span class="mt-0.5 pl-8 text-xs font-normal text-amber-300/90">{{ $item['hint'] }}</span>
+                        @endif
+                    </a>
+                @endif
             @endforeach
         @endif
     </nav>
