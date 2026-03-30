@@ -32,6 +32,7 @@
                 'icon' => 'card',
                 'routes' => ['financeiro.*'],
                 'children' => [
+                    ['route' => 'financeiro.fluxo_caixa', 'label' => 'Fluxo de caixa', 'icon' => 'chart', 'routes' => ['financeiro.fluxo_caixa']],
                     ['route' => 'financeiro.despesas_fixas', 'label' => 'Despesas Fixas', 'icon' => 'clipboard-plan', 'routes' => ['financeiro.despesas_fixas']],
                     ['route' => 'financeiro.despesas_variaveis', 'label' => 'Despesas Variáveis', 'icon' => 'coin', 'routes' => ['financeiro.despesas_variaveis']],
                 ],

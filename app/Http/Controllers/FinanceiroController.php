@@ -8,6 +8,8 @@ use App\Models\FixedExpense;
 use App\Models\FixedExpenseCategory;
 use App\Models\VariableExpense;
 use App\Models\VariableExpenseCategory;
+use App\Services\FluxoCaixaService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +31,33 @@ class FinanceiroController extends Controller
         return view('paginas.financeiro.despesas-fixas', [
             'rows' => $rows,
             'categorias' => $categorias,
+        ]);
+    }
+
+    public function fluxoCaixa(Request $request): View
+    {
+        $fim = $request->filled('fim')
+            ? Carbon::parse((string) $request->input('fim'))->endOfDay()
+            : Carbon::now()->endOfDay();
+        $inicio = $request->filled('inicio')
+            ? Carbon::parse((string) $request->input('inicio'))->startOfDay()
+            : Carbon::now()->copy()->startOfMonth()->startOfDay();
+
+        if ($inicio->gt($fim)) {
+            $inicio = $fim->copy()->startOfMonth()->startOfDay();
+        }
+
+        $maxDays = 370;
+        if ($inicio->diffInDays($fim) > $maxDays) {
+            $inicio = $fim->copy()->subDays($maxDays)->startOfDay();
+        }
+
+        $fluxo = (new FluxoCaixaService)->build($inicio, $fim);
+
+        return view('paginas.financeiro.fluxo-caixa', [
+            'fluxo' => $fluxo,
+            'inicio' => $inicio->toDateString(),
+            'fim' => $fim->toDateString(),
         ]);
     }
 
