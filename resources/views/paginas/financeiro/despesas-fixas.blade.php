@@ -83,14 +83,14 @@
                                     @click.stop
                                     class="w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
                                 >
-                                    <div class="flex items-start justify-between gap-3 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white px-10 py-7">
-                                        <div>
-                                            <h3 class="text-base font-bold text-gray-900">Nova categoria</h3>
-                                            <p class="mt-0.5 text-sm text-gray-500">Cria a categoria e já volta selecionada.</p>
+                                    <div class="flex items-start justify-between gap-4 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white px-10 py-7">
+                                        <div class="min-w-0 flex-1 space-y-1.5 pr-2">
+                                            <h3 class="text-lg font-bold tracking-tight text-gray-900">Nova categoria</h3>
+                                            <p class="text-sm leading-relaxed text-gray-500">Cria a categoria e já volta selecionada.</p>
                                         </div>
                                         <button
                                             type="button"
-                                            class="rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+                                            class="shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
                                             @click="showCatModal = false"
                                         >
                                             Fechar
@@ -124,11 +124,11 @@
                                                     class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                                                 />
                                             </div>
-                                            <div class="flex flex-col-reverse justify-end gap-3 border-t border-gray-100 pt-7 sm:flex-row">
-                                                <button type="button" class="btn-pdv btn-pdv-secondary px-6 py-2.5" @click="showCatModal = false">
+                                            <div class="flex flex-col gap-3 border-t border-gray-100 pt-7 sm:flex-row sm:items-center sm:justify-end">
+                                                <button type="button" class="btn-pdv btn-pdv-secondary w-full px-6 py-3 sm:w-auto" @click="showCatModal = false">
                                                     Cancelar
                                                 </button>
-                                                <button type="submit" class="btn-pdv btn-pdv-primary px-7 py-2.5">
+                                                <button type="submit" class="btn-pdv btn-pdv-primary w-full px-7 py-3 sm:w-auto">
                                                     Salvar
                                                 </button>
                                             </div>
