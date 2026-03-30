@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreFixedExpenseRequest;
 use App\Http\Requests\StoreCashFlowEntryRequest;
 use App\Http\Requests\StoreVariableExpenseRequest;
+use App\Models\CashFlowCategory;
 use App\Models\CashFlowEntry;
 use App\Models\FixedExpense;
 use App\Models\FixedExpenseCategory;
@@ -15,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -57,19 +59,56 @@ class FinanceiroController extends Controller
         $fluxo = (new FluxoCaixaService)->build($inicio, $fim);
 
         $lancamentos = CashFlowEntry::query()
-            ->with('user')
+            ->with(['user', 'category'])
             ->whereBetween('data_movimento', [$inicio->toDateString(), $fim->toDateString()])
             ->orderByDesc('data_movimento')
             ->orderByDesc('created_at')
             ->limit(200)
             ->get();
 
+        $categoriasFluxo = CashFlowCategory::query()->orderBy('nome')->get(['id', 'nome']);
+
         return view('paginas.financeiro.fluxo-caixa', [
             'fluxo' => $fluxo,
             'inicio' => $inicio->toDateString(),
             'fim' => $fim->toDateString(),
             'lancamentos' => $lancamentos,
+            'categoriasFluxo' => $categoriasFluxo,
         ]);
+    }
+
+    public function storeCategoriaFluxoCaixa(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'cf_cat_nome' => ['required', 'string', 'max:80'],
+            'cf_cat_cor' => ['nullable', 'string', 'max:16'],
+            'inicio' => ['nullable', 'date'],
+            'fim' => ['nullable', 'date'],
+        ], [
+            'cf_cat_nome.required' => 'Informe o nome da categoria.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->route('financeiro.fluxo_caixa', $request->only(['inicio', 'fim']))
+                ->withErrors($validator)
+                ->withInput()
+                ->with('open_manual_modal', true)
+                ->with('open_cat_modal', true);
+        }
+
+        $data = $validator->validated();
+
+        $cat = CashFlowCategory::query()->create([
+            'nome' => $data['cf_cat_nome'],
+            'cor' => $data['cf_cat_cor'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('financeiro.fluxo_caixa', $request->only(['inicio', 'fim']))
+            ->with('status', 'Categoria criada.')
+            ->with('select_cash_flow_category_id', $cat->id)
+            ->with('open_manual_modal', true);
     }
 
     public function storeLancamentoManual(StoreCashFlowEntryRequest $request): RedirectResponse
@@ -86,7 +125,7 @@ class FinanceiroController extends Controller
             'tipo' => $data['tipo'],
             'data_movimento' => $data['data_movimento'],
             'valor' => $valor,
-            'categoria' => $data['categoria'] ?? null,
+            'cash_flow_category_id' => $data['cash_flow_category_id'] ?? null,
             'origem' => $data['origem'] ?? null,
             'descricao' => $data['descricao'],
             'observacoes' => $data['observacoes'] ?? null,

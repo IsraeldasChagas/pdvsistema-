@@ -1,6 +1,32 @@
 <x-app-layout>
-    <div x-data="{ showManualModal: false }" class="min-h-[calc(100vh-3.5rem)] bg-[#f8f9fa] px-4 py-8 sm:px-6 lg:px-8">
+    @php
+        $openManualModal =
+            session('open_manual_modal')
+            || ($errors->any() && old('tipo') !== null);
+        $openCatModal = session('open_cat_modal') || ($errors->any() && old('cf_cat_nome') !== null);
+    @endphp
+    <div
+        x-data="{ showManualModal: {{ $openManualModal ? 'true' : 'false' }}, showCatModal: {{ $openCatModal ? 'true' : 'false' }} }"
+        class="min-h-[calc(100vh-3.5rem)] bg-[#f8f9fa] px-4 py-8 sm:px-6 lg:px-8"
+    >
         <div class="mx-auto max-w-6xl">
+            @if (session('status'))
+                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    <p class="font-semibold">Verifique os campos.</p>
+                    <ul class="mt-2 list-inside list-disc">
+                        @foreach ($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="flex items-start gap-3">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-slate-700 shadow-sm ring-1 ring-gray-200">
@@ -55,12 +81,12 @@
                 <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                     <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Entradas</p>
                     <p class="mt-2 text-2xl font-bold tabular-nums text-emerald-700">R$ {{ number_format($t['entradas'], 2, ',', '.') }}</p>
-                    <p class="mt-1 text-xs text-gray-500">Vendas registradas no caixa</p>
+                    <p class="mt-1 text-xs text-gray-500">Vendas no caixa + entradas manuais</p>
                 </div>
                 <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                     <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Saídas (variáveis)</p>
                     <p class="mt-2 text-2xl font-bold tabular-nums text-rose-700">R$ {{ number_format($t['saidas_variaveis'], 2, ',', '.') }}</p>
-                    <p class="mt-1 text-xs text-gray-500">Por data da despesa</p>
+                    <p class="mt-1 text-xs text-gray-500">Despesas variáveis + saídas manuais (por data)</p>
                 </div>
                 <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                     <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Saídas (fixas est.)</p>
@@ -171,7 +197,7 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 font-medium text-gray-900">{{ $e->descricao }}</td>
-                                    <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $e->categoria ?: '—' }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $e->category?->nome ?? '—' }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $e->origem ?: '—' }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 font-semibold {{ $e->tipo === 'entrada' ? 'text-emerald-700' : 'text-rose-700' }}">
                                         R$ {{ number_format((float) $e->valor, 2, ',', '.') }}
@@ -293,15 +319,25 @@
                         </div>
 
                         <div class="sm:col-span-2">
-                            <label for="man_cat" class="block text-sm font-bold text-gray-900">Categoria (opcional)</label>
-                            <input
-                                id="man_cat"
-                                name="categoria"
-                                type="text"
-                                value="{{ old('categoria') }}"
-                                placeholder="Ex: Retirada, Impostos, Ajuste"
+                            <div class="flex items-center justify-between gap-3">
+                                <label for="man_cf_cat" class="block text-sm font-bold text-gray-900">Categoria (opcional)</label>
+                                <button type="button" class="text-xs font-semibold text-blue-700 hover:text-blue-900" @click="showCatModal = true">
+                                    + Nova categoria
+                                </button>
+                            </div>
+                            <select
+                                id="man_cf_cat"
+                                name="cash_flow_category_id"
                                 class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                            />
+                            >
+                                <option value="">— Selecione —</option>
+                                @php
+                                    $selCfCat = old('cash_flow_category_id', session('select_cash_flow_category_id'));
+                                @endphp
+                                @foreach ($categoriasFluxo as $c)
+                                    <option value="{{ $c->id }}" @selected((string) $selCfCat === (string) $c->id)>{{ $c->nome }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div class="sm:col-span-2">
@@ -326,6 +362,66 @@
                 </div>
             </form>
         </div>
+        </div>
+
+        <div
+            x-show="showCatModal"
+            x-cloak
+            class="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-6 backdrop-blur-[2px] sm:items-center sm:p-12"
+            @click="showCatModal = false"
+        >
+            <div
+                @click.stop
+                class="w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
+            >
+                <form
+                    action="{{ route('financeiro.fluxo_caixa.categorias.store') }}"
+                    method="post"
+                    class="px-10 py-9 pb-14 sm:px-14 sm:py-12 sm:pb-16"
+                >
+                    @csrf
+                    <input type="hidden" name="inicio" value="{{ $inicio }}">
+                    <input type="hidden" name="fim" value="{{ $fim }}">
+
+                    <div class="mx-auto max-w-md space-y-7">
+                        <div class="space-y-1.5 pb-1">
+                            <h3 class="text-lg font-bold tracking-tight text-gray-900">Nova categoria</h3>
+                            <p class="text-sm leading-relaxed text-gray-500">Cria a categoria e já volta selecionada no lançamento.</p>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="cf_cat_nome" class="block text-sm font-bold text-gray-900">Nome</label>
+                            <input
+                                id="cf_cat_nome"
+                                name="cf_cat_nome"
+                                type="text"
+                                value="{{ old('cf_cat_nome') }}"
+                                placeholder="Ex: Retirada, Imposto, Ajuste"
+                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                required
+                            />
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="cf_cat_cor" class="block text-sm font-bold text-gray-900">Cor (opcional)</label>
+                            <input
+                                id="cf_cat_cor"
+                                name="cf_cat_cor"
+                                type="text"
+                                value="{{ old('cf_cat_cor') }}"
+                                placeholder="Ex: #2563eb"
+                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                            />
+                        </div>
+                        <div class="flex flex-row flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-6">
+                            <button type="button" class="btn-pdv-ghost btn-pdv-ghost-red px-6 py-2.5" @click="showCatModal = false">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn-pdv btn-pdv-primary px-7 py-2.5">
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

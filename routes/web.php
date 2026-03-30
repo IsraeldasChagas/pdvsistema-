@@ -97,6 +97,7 @@ Route::middleware(['auth', 'verified', 'super.panel', 'pdv.screen'])->group(func
     Route::post('/comissoes/{commission}/pagar', [CommissionController::class, 'marcarPago'])->name('comissoes.pagar');
     Route::post('/comissoes/pagar-lote', [CommissionController::class, 'marcarPagoLote'])->name('comissoes.pagar-lote');
     Route::get('/financeiro/fluxo-caixa', [FinanceiroController::class, 'fluxoCaixa'])->name('financeiro.fluxo_caixa');
+    Route::post('/financeiro/fluxo-caixa/categorias', [FinanceiroController::class, 'storeCategoriaFluxoCaixa'])->name('financeiro.fluxo_caixa.categorias.store');
     Route::post('/financeiro/fluxo-caixa/lancamentos', [FinanceiroController::class, 'storeLancamentoManual'])->name('financeiro.fluxo_caixa.lancamentos.store');
     Route::delete('/financeiro/fluxo-caixa/lancamentos/{entry}', [FinanceiroController::class, 'destroyLancamentoManual'])->name('financeiro.fluxo_caixa.lancamentos.destroy');
     Route::get('/financeiro/despesas-fixas', [FinanceiroController::class, 'despesasFixas'])->name('financeiro.despesas_fixas');

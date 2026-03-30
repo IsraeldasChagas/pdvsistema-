@@ -16,7 +16,7 @@ class CashFlowEntry extends Model
         'tipo',
         'data_movimento',
         'valor',
-        'categoria',
+        'cash_flow_category_id',
         'origem',
         'descricao',
         'observacoes',
@@ -33,6 +33,14 @@ class CashFlowEntry extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<CashFlowCategory, $this>
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(CashFlowCategory::class, 'cash_flow_category_id');
     }
 }
 
