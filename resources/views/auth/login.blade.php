@@ -1,16 +1,32 @@
 <x-login-layout>
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <h1 class="text-2xl font-bold text-gray-900">{{ config('app.name', 'Sistema PDV') }}</h1>
-    <p class="mt-1 text-sm text-gray-500">Entre com seu e-mail e senha</p>
-    <p class="mt-3 text-xs leading-relaxed text-slate-600">
-        <strong>Administrador de empresa nova?</strong> Use o <strong>mesmo e-mail e senha</strong> do campo “E-mail do admin” ao cadastrar a empresa (super admin). Não existe conta automática em <span class="font-mono">admin@pdvsistema.com</span> a menos que você tenha cadastrado esse e-mail.
-    </p>
-    @if (app()->environment('local'))
-        <p class="mt-2 text-xs text-slate-500">
-            Ambiente local com <span class="font-mono">php artisan db:seed</span>: tente <span class="font-mono">admin@sistema.pdv</span> ou <span class="font-mono">super@sistema.pdv</span>, senha <span class="font-mono">password</span>.
-        </p>
+    @php
+        $logoImagem = null;
+        $dir = public_path('imagem');
+        foreach (['pdv.png', 'pdv.jpg', 'pdv.jpeg', 'pdv.webp', 'pdv.svg'] as $f) {
+            if (is_file($dir . DIRECTORY_SEPARATOR . $f)) {
+                $logoImagem = 'imagem/' . $f;
+                break;
+            }
+        }
+    @endphp
+
+    @if ($logoImagem !== null)
+        <div class="mb-8 flex justify-center">
+            <img
+                src="{{ asset($logoImagem) }}"
+                alt="{{ config('app.name', 'PDV') }}"
+                class="h-auto max-h-36 w-auto max-w-full object-contain"
+                width="280"
+                height="120"
+                loading="eager"
+            />
+        </div>
     @endif
+
+    <h1 class="text-center text-2xl font-bold text-gray-900">{{ config('app.name', 'Sistema PDV') }}</h1>
+    <p class="mt-1 text-center text-sm text-gray-500">Entre com seu e-mail e senha</p>
 
     <form method="POST" action="{{ route('login') }}" class="mt-8 space-y-5">
         @csrf
@@ -21,7 +37,7 @@
                 id="email"
                 type="email"
                 name="email"
-                value="{{ old('email', app()->environment('local') ? 'admin@sistema.pdv' : '') }}"
+                value="{{ old('email') }}"
                 required
                 autofocus
                 autocomplete="username"
