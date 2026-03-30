@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FixedExpense extends Model
 {
@@ -13,6 +14,7 @@ class FixedExpense extends Model
         'company_id',
         'descricao',
         'categoria',
+        'fixed_expense_category_id',
         'valor',
         'periodicidade',
         'intervalo',
@@ -38,5 +40,13 @@ class FixedExpense extends Model
             'alerta_dias' => 'integer',
             'data_inicio' => 'date',
         ];
+    }
+
+    /**
+     * @return BelongsTo<FixedExpenseCategory, $this>
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(FixedExpenseCategory::class, 'fixed_expense_category_id');
     }
 }

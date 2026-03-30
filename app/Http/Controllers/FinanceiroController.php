@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFixedExpenseRequest;
 use App\Models\FixedExpense;
+use App\Models\FixedExpenseCategory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -13,16 +15,51 @@ class FinanceiroController extends Controller
 {
     public function despesasFixas(): View
     {
-        $rows = FixedExpense::query()->orderByDesc('created_at')->limit(200)->get();
+        $rows = FixedExpense::query()
+            ->with('category')
+            ->orderByDesc('created_at')
+            ->limit(200)
+            ->get();
+
+        $categorias = FixedExpenseCategory::query()->orderBy('nome')->get(['id', 'nome']);
 
         return view('paginas.financeiro.despesas-fixas', [
             'rows' => $rows,
+            'categorias' => $categorias,
         ]);
     }
 
     public function despesasVariaveis(): View
     {
         return view('paginas.financeiro.despesas-variaveis');
+    }
+
+    public function categoriasDespesasFixas(): View
+    {
+        $rows = FixedExpenseCategory::query()->orderBy('nome')->get();
+
+        return view('paginas.financeiro.categorias-despesas-fixas', [
+            'rows' => $rows,
+        ]);
+    }
+
+    public function storeCategoriaDespesasFixas(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'nome' => ['required', 'string', 'max:80'],
+            'cor' => ['nullable', 'string', 'max:16'],
+        ], [
+            'nome.required' => 'Informe o nome da categoria.',
+        ]);
+
+        FixedExpenseCategory::query()->create([
+            'nome' => $data['nome'],
+            'cor' => $data['cor'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('financeiro.categorias_despesas_fixas')
+            ->with('status', 'Categoria criada.');
     }
 
     public function storeDespesasFixas(StoreFixedExpenseRequest $request): RedirectResponse
@@ -56,7 +93,7 @@ class FinanceiroController extends Controller
 
         FixedExpense::query()->create([
             'descricao' => $data['descricao'],
-            'categoria' => $data['categoria'] ?? null,
+            'fixed_expense_category_id' => $data['fixed_expense_category_id'] ?? null,
             'valor' => $valor,
             'periodicidade' => $data['periodicidade'],
             'intervalo' => $data['intervalo'] ?? null,

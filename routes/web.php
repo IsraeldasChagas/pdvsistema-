@@ -98,6 +98,8 @@ Route::middleware(['auth', 'verified', 'super.panel', 'pdv.screen'])->group(func
     Route::post('/comissoes/pagar-lote', [CommissionController::class, 'marcarPagoLote'])->name('comissoes.pagar-lote');
     Route::get('/financeiro/despesas-fixas', [FinanceiroController::class, 'despesasFixas'])->name('financeiro.despesas_fixas');
     Route::post('/financeiro/despesas-fixas', [FinanceiroController::class, 'storeDespesasFixas'])->name('financeiro.despesas_fixas.store');
+    Route::get('/financeiro/categorias-despesas-fixas', [FinanceiroController::class, 'categoriasDespesasFixas'])->name('financeiro.categorias_despesas_fixas');
+    Route::post('/financeiro/categorias-despesas-fixas', [FinanceiroController::class, 'storeCategoriaDespesasFixas'])->name('financeiro.categorias_despesas_fixas.store');
     Route::get('/financeiro/despesas-variaveis', [FinanceiroController::class, 'despesasVariaveis'])->name('financeiro.despesas_variaveis');
     Route::middleware('admin')->group(function () {
         Route::get('/usuarios', [UserController::class, 'index'])->name('modulos.usuarios');

@@ -53,15 +53,20 @@
                         </div>
 
                         <div>
-                            <label for="categoria" class="block text-sm font-bold text-gray-900">Categoria</label>
-                            <input
-                                id="categoria"
-                                name="categoria"
-                                type="text"
-                                value="{{ old('categoria') }}"
-                                placeholder="Ex: Utilidades"
+                            <label for="fixed_expense_category_id" class="block text-sm font-bold text-gray-900">Categoria</label>
+                            <select
+                                id="fixed_expense_category_id"
+                                name="fixed_expense_category_id"
                                 class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                            />
+                            >
+                                <option value="">— Selecione —</option>
+                                @foreach ($categorias as $c)
+                                    <option value="{{ $c->id }}" @selected((string) old('fixed_expense_category_id') === (string) $c->id)>{{ $c->nome }}</option>
+                                @endforeach
+                            </select>
+                            <a href="{{ route('financeiro.categorias_despesas_fixas') }}" class="mt-2 inline-block text-xs font-semibold text-blue-700 hover:text-blue-900">
+                                + Criar/gerenciar categorias
+                            </a>
                         </div>
 
                         <div>
@@ -273,7 +278,7 @@
                             @forelse ($rows as $r)
                                 <tr class="hover:bg-gray-50/80">
                                     <td class="px-4 py-3 font-medium text-gray-900">{{ $r->descricao }}</td>
-                                    <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $r->categoria ?: '—' }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $r->category?->nome ?? '—' }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 font-semibold text-gray-900">
                                         R$ {{ number_format((float) $r->valor, 2, ',', '.') }}
                                     </td>

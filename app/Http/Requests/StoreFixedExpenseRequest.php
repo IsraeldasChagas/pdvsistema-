@@ -19,7 +19,7 @@ class StoreFixedExpenseRequest extends FormRequest
     {
         return [
             'descricao' => ['required', 'string', 'max:255'],
-            'categoria' => ['nullable', 'string', 'max:80'],
+            'fixed_expense_category_id' => ['nullable', 'integer'],
             'valor' => ['required', 'string', 'max:32'],
 
             'periodicidade' => ['required', 'string', Rule::in(['mensal', 'semanal', 'anual', 'a_cada_x_dias'])],
