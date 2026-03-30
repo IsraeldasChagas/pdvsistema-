@@ -83,26 +83,26 @@
                                     @click.stop
                                     class="w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
                                 >
-                                    <div class="flex items-start justify-between gap-4 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white px-10 py-7">
-                                        <div class="min-w-0 flex-1 space-y-1.5 pr-2">
-                                            <h3 class="text-lg font-bold tracking-tight text-gray-900">Nova categoria</h3>
-                                            <p class="text-sm leading-relaxed text-gray-500">Cria a categoria e já volta selecionada.</p>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            class="shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
-                                            @click="showCatModal = false"
-                                        >
-                                            Fechar
-                                        </button>
-                                    </div>
                                     <form
                                         action="{{ route('financeiro.categorias_despesas_fixas.store') }}"
                                         method="post"
                                         class="px-10 py-8 sm:px-14 sm:py-12"
                                     >
                                         @csrf
-                                        <div class="mx-auto max-w-md space-y-7">
+                                        <div class="mx-auto max-w-md space-y-6">
+                                            <div class="flex items-start justify-between gap-4">
+                                                <div class="min-w-0 space-y-1.5">
+                                                    <h3 class="text-lg font-bold tracking-tight text-gray-900">Nova categoria</h3>
+                                                    <p class="text-sm leading-relaxed text-gray-500">Cria a categoria e já volta selecionada.</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    class="shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+                                                    @click="showCatModal = false"
+                                                >
+                                                    Fechar
+                                                </button>
+                                            </div>
                                             <div class="space-y-1.5">
                                                 <label for="cat_nome" class="block text-sm font-bold text-gray-900">Nome</label>
                                                 <input
@@ -124,11 +124,11 @@
                                                     class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                                                 />
                                             </div>
-                                            <div class="flex flex-col gap-3 border-t border-gray-100 pt-7 sm:flex-row sm:items-center sm:justify-end">
-                                                <button type="button" class="btn-pdv btn-pdv-secondary w-full px-6 py-3 sm:w-auto" @click="showCatModal = false">
+                                            <div class="flex flex-row flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-6">
+                                                <button type="button" class="btn-pdv-ghost btn-pdv-ghost-red px-6 py-2.5" @click="showCatModal = false">
                                                     Cancelar
                                                 </button>
-                                                <button type="submit" class="btn-pdv btn-pdv-primary w-full px-7 py-3 sm:w-auto">
+                                                <button type="submit" class="btn-pdv btn-pdv-primary px-7 py-2.5">
                                                     Salvar
                                                 </button>
                                             </div>
