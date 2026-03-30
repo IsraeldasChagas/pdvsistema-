@@ -37,7 +37,8 @@
             <img
                 src="{{ asset($logoImagem) }}?v={{ (string) filemtime(public_path($logoImagem)) }}"
                 alt="{{ config('app.name', 'PDV') }}"
-                class="h-auto max-h-40 w-auto max-w-full object-contain"
+                style="max-height: 10rem; height: auto;"
+                class="h-auto w-auto max-w-full object-contain"
                 loading="eager"
                 decoding="async"
             />
