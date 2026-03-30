@@ -233,7 +233,7 @@
         >
         <div
             @click.stop
-            class="w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
+            class="relative z-10 w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
         >
             <form
                 action="{{ route('financeiro.fluxo_caixa.lancamentos.store') }}"
@@ -362,17 +362,16 @@
                 </div>
             </form>
         </div>
-        </div>
 
         <div
             x-show="showCatModal"
             x-cloak
-            class="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-6 backdrop-blur-[2px] sm:items-center sm:p-12"
+            class="absolute inset-0 z-[100] flex items-end justify-center bg-black/50 p-6 backdrop-blur-[2px] sm:items-center sm:p-12"
             @click="showCatModal = false"
         >
             <div
                 @click.stop
-                class="w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
+                class="relative z-10 w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
             >
                 <form
                     action="{{ route('financeiro.fluxo_caixa.categorias.store') }}"
@@ -422,6 +421,7 @@
                     </div>
                 </form>
             </div>
+        </div>
         </div>
     </div>
 
