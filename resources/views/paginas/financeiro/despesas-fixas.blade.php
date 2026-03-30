@@ -52,21 +52,66 @@
                             />
                         </div>
 
-                        <div>
-                            <label for="fixed_expense_category_id" class="block text-sm font-bold text-gray-900">Categoria</label>
+                        <div x-data="{ showCatModal: false }">
+                            <div class="flex items-center justify-between gap-3">
+                                <label for="fixed_expense_category_id" class="block text-sm font-bold text-gray-900">Categoria</label>
+                                <button type="button" class="text-xs font-semibold text-blue-700 hover:text-blue-900" @click="showCatModal = true">
+                                    + Nova categoria
+                                </button>
+                            </div>
                             <select
                                 id="fixed_expense_category_id"
                                 name="fixed_expense_category_id"
                                 class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                             >
                                 <option value="">— Selecione —</option>
+                                @php
+                                    $selCat = old('fixed_expense_category_id', session('select_fixed_expense_category_id'));
+                                @endphp
                                 @foreach ($categorias as $c)
-                                    <option value="{{ $c->id }}" @selected((string) old('fixed_expense_category_id') === (string) $c->id)>{{ $c->nome }}</option>
+                                    <option value="{{ $c->id }}" @selected((string) $selCat === (string) $c->id)>{{ $c->nome }}</option>
                                 @endforeach
                             </select>
-                            <a href="{{ route('financeiro.categorias_despesas_fixas') }}" class="mt-2 inline-block text-xs font-semibold text-blue-700 hover:text-blue-900">
-                                + Criar/gerenciar categorias
-                            </a>
+
+                            <div x-show="showCatModal" x-cloak class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center">
+                                <div @click.stop class="w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/10">
+                                    <div class="flex items-start justify-between gap-3 border-b border-gray-100 px-5 py-4">
+                                        <div>
+                                            <h3 class="text-base font-bold text-gray-900">Nova categoria</h3>
+                                            <p class="mt-0.5 text-sm text-gray-500">Cria a categoria e já volta selecionada.</p>
+                                        </div>
+                                        <button type="button" class="text-sm font-semibold text-gray-500 hover:text-gray-800" @click="showCatModal = false">Fechar</button>
+                                    </div>
+                                    <form action="{{ route('financeiro.categorias_despesas_fixas.store') }}" method="post" class="space-y-4 px-5 py-5">
+                                        @csrf
+                                        <div>
+                                            <label for="cat_nome" class="block text-sm font-bold text-gray-900">Nome</label>
+                                            <input
+                                                id="cat_nome"
+                                                name="nome"
+                                                type="text"
+                                                placeholder="Ex: Utilidades"
+                                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label for="cat_cor" class="block text-sm font-bold text-gray-900">Cor (opcional)</label>
+                                            <input
+                                                id="cat_cor"
+                                                name="cor"
+                                                type="text"
+                                                placeholder="Ex: #2563eb"
+                                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                            />
+                                        </div>
+                                        <div class="flex justify-end gap-2 pt-2">
+                                            <button type="button" class="btn-pdv btn-pdv-secondary px-5 py-2.5" @click="showCatModal = false">Cancelar</button>
+                                            <button type="submit" class="btn-pdv btn-pdv-primary px-6 py-2.5">Salvar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
 
                         <div>

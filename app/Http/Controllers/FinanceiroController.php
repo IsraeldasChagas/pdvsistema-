@@ -52,14 +52,15 @@ class FinanceiroController extends Controller
             'nome.required' => 'Informe o nome da categoria.',
         ]);
 
-        FixedExpenseCategory::query()->create([
+        $cat = FixedExpenseCategory::query()->create([
             'nome' => $data['nome'],
             'cor' => $data['cor'] ?? null,
         ]);
 
         return redirect()
-            ->route('financeiro.categorias_despesas_fixas')
-            ->with('status', 'Categoria criada.');
+            ->route('financeiro.despesas_fixas')
+            ->with('status', 'Categoria criada.')
+            ->with('select_fixed_expense_category_id', $cat->id);
     }
 
     public function storeDespesasFixas(StoreFixedExpenseRequest $request): RedirectResponse
