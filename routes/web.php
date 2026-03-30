@@ -2,22 +2,22 @@
 
 use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\CompanyContextController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EntradaController;
-use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\EntregaController;
+use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\FinanceiroController;
 use App\Http\Controllers\FinanceiroSaasController;
-use App\Http\Controllers\SaasChargeController;
-use App\Http\Controllers\SaasPlanController;
-use App\Http\Controllers\SaidaController;
 use App\Http\Controllers\PdvSettingsController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\SaasChargeController;
+use App\Http\Controllers\SaasPlanController;
+use App\Http\Controllers\SaidaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendaController;
 use Illuminate\Support\Facades\Route;
@@ -97,6 +97,7 @@ Route::middleware(['auth', 'verified', 'super.panel', 'pdv.screen'])->group(func
     Route::post('/comissoes/{commission}/pagar', [CommissionController::class, 'marcarPago'])->name('comissoes.pagar');
     Route::post('/comissoes/pagar-lote', [CommissionController::class, 'marcarPagoLote'])->name('comissoes.pagar-lote');
     Route::get('/financeiro/despesas-fixas', [FinanceiroController::class, 'despesasFixas'])->name('financeiro.despesas_fixas');
+    Route::post('/financeiro/despesas-fixas', [FinanceiroController::class, 'storeDespesasFixas'])->name('financeiro.despesas_fixas.store');
     Route::get('/financeiro/despesas-variaveis', [FinanceiroController::class, 'despesasVariaveis'])->name('financeiro.despesas_variaveis');
     Route::middleware('admin')->group(function () {
         Route::get('/usuarios', [UserController::class, 'index'])->name('modulos.usuarios');
