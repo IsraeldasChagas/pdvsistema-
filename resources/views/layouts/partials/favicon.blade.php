@@ -1,7 +1,7 @@
 @php
     $icon = null;
     $base = public_path();
-    foreach (['icon1.ico', 'icon1.png', 'icon1.svg', 'icon1.jpg', 'icon1.jpeg', 'icon1.webp'] as $f) {
+    foreach (['icon.ico', 'icon.png', 'icon.svg', 'icon.jpg', 'icon.jpeg', 'icon.webp'] as $f) {
         if (is_file($base . DIRECTORY_SEPARATOR . $f)) {
             $icon = $f;
             break;
