@@ -86,11 +86,11 @@
                                     <form
                                         action="{{ route('financeiro.categorias_despesas_fixas.store') }}"
                                         method="post"
-                                        class="px-10 py-8 pb-10 sm:px-14 sm:py-12 sm:pb-14"
+                                        class="px-10 py-9 pb-14 sm:px-14 sm:py-12 sm:pb-16"
                                     >
                                         @csrf
-                                        <div class="mx-auto max-w-md space-y-6">
-                                            <div class="space-y-1.5">
+                                        <div class="mx-auto max-w-md space-y-7">
+                                            <div class="space-y-1.5 pb-1">
                                                 <h3 class="text-lg font-bold tracking-tight text-gray-900">Nova categoria</h3>
                                                 <p class="text-sm leading-relaxed text-gray-500">Cria a categoria e já volta selecionada.</p>
                                             </div>
