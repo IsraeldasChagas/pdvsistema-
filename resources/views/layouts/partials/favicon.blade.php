@@ -1,32 +1,27 @@
 @php
-    $dir = public_path('imagem');
-    $override = null;
-    foreach (['pdv.ico', 'pdv.png', 'pdv.jpg', 'pdv.jpeg', 'pdv.webp'] as $f) {
-        if (is_file($dir . DIRECTORY_SEPARATOR . $f)) {
-            $override = 'imagem/' . $f;
+    $icon = null;
+    $base = public_path();
+    foreach (['icon1.ico', 'icon1.png', 'icon1.svg', 'icon1.jpg', 'icon1.jpeg', 'icon1.webp'] as $f) {
+        if (is_file($base . DIRECTORY_SEPARATOR . $f)) {
+            $icon = $f;
             break;
         }
     }
-
-    $svgPath = public_path('favicon.svg');
-    $svgV = is_file($svgPath) ? (string) filemtime($svgPath) : '1';
 @endphp
-@if ($override !== null)
+@if ($icon !== null)
     @php
-        $ext = strtolower(pathinfo($override, PATHINFO_EXTENSION));
+        $ext = strtolower(pathinfo($icon, PATHINFO_EXTENSION));
         $type = match ($ext) {
             'ico' => 'image/x-icon',
             'png' => 'image/png',
+            'svg' => 'image/svg+xml',
             'jpg', 'jpeg' => 'image/jpeg',
             'webp' => 'image/webp',
             default => 'image/png',
         };
+        $m = (string) filemtime($base . DIRECTORY_SEPARATOR . $icon);
     @endphp
-    @php $ovM = (string) filemtime(public_path($override)); @endphp
-    <link rel="icon" href="{{ asset($override) }}?v={{ $ovM }}" type="{{ $type }}" sizes="any">
-    <link rel="apple-touch-icon" href="{{ asset($override) }}?v={{ $ovM }}">
-@else
-    <link rel="icon" href="{{ asset('favicon.svg') }}?v={{ $svgV }}" type="image/svg+xml" sizes="any">
-    <link rel="shortcut icon" href="{{ asset('favicon.svg') }}?v={{ $svgV }}" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}?v={{ $svgV }}">
+    <link rel="icon" href="{{ asset($icon) }}?v={{ $m }}" type="{{ $type }}" sizes="any">
+    <link rel="shortcut icon" href="{{ asset($icon) }}?v={{ $m }}" type="{{ $type }}">
+    <link rel="apple-touch-icon" href="{{ asset($icon) }}?v={{ $m }}">
 @endif
