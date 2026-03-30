@@ -33,7 +33,6 @@
                 'routes' => ['financeiro.*'],
                 'children' => [
                     ['route' => 'financeiro.despesas_fixas', 'label' => 'Despesas Fixas', 'icon' => 'clipboard-plan', 'routes' => ['financeiro.despesas_fixas']],
-                    ['route' => 'financeiro.categorias_despesas_fixas', 'label' => 'Categorias (Fixas)', 'icon' => 'grid', 'routes' => ['financeiro.categorias_despesas_fixas']],
                     ['route' => 'financeiro.despesas_variaveis', 'label' => 'Despesas Variáveis', 'icon' => 'coin', 'routes' => ['financeiro.despesas_variaveis']],
                 ],
             ],
