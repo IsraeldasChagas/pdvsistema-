@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        @include('layouts.partials.favicon')
+
         <title>Login - {{ config('app.name', 'PDV Sistema') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
