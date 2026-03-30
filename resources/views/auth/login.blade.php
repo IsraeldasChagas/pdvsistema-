@@ -3,11 +3,31 @@
 
     @php
         $logoImagem = null;
-        $dir = public_path('imagem');
-        foreach (['pdv.png', 'pdv.jpg', 'pdv.jpeg', 'pdv.webp', 'pdv.svg'] as $f) {
-            if (is_file($dir . DIRECTORY_SEPARATOR . $f)) {
-                $logoImagem = 'imagem/' . $f;
+        $try = [
+            'imagem/pdv.png', 'imagem/PDV.png', 'imagem/pdv.jpg', 'imagem/PDV.jpg', 'imagem/pdv.jpeg', 'imagem/pdv.webp', 'imagem/pdv.svg',
+            'image/pdv.png', 'image/PDV.png', 'image/pdv.jpg', 'image/PDV.jpg', 'image/pdv.jpeg', 'image/pdv.webp', 'image/pdv.svg',
+        ];
+        foreach ($try as $rel) {
+            if (is_file(public_path($rel))) {
+                $logoImagem = $rel;
                 break;
+            }
+        }
+        if ($logoImagem === null) {
+            foreach (['imagem', 'image'] as $sub) {
+                $dir = public_path($sub);
+                if (! is_dir($dir)) {
+                    continue;
+                }
+                foreach (scandir($dir) ?: [] as $f) {
+                    if ($f === '.' || $f === '..') {
+                        continue;
+                    }
+                    if (preg_match('/^pdv\.(png|jpe?g|webp|svg)$/i', $f)) {
+                        $logoImagem = $sub.'/'.$f;
+                        break 2;
+                    }
+                }
             }
         }
     @endphp
@@ -15,12 +35,11 @@
     @if ($logoImagem !== null)
         <div class="mb-8 flex justify-center">
             <img
-                src="{{ asset($logoImagem) }}"
+                src="{{ asset($logoImagem) }}?v={{ (string) filemtime(public_path($logoImagem)) }}"
                 alt="{{ config('app.name', 'PDV') }}"
-                class="h-auto max-h-36 w-auto max-w-full object-contain"
-                width="280"
-                height="120"
+                class="h-auto max-h-40 w-auto max-w-full object-contain"
                 loading="eager"
+                decoding="async"
             />
         </div>
     @endif
