@@ -76,14 +76,14 @@
                             <div
                                 x-show="showCatModal"
                                 x-cloak
-                                class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 backdrop-blur-[2px] sm:items-center sm:p-8"
+                                class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-6 backdrop-blur-[2px] sm:items-center sm:p-12"
                                 @click="showCatModal = false"
                             >
                                 <div
                                     @click.stop
                                     class="w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/10"
                                 >
-                                    <div class="flex items-start justify-between gap-3 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white px-6 py-5">
+                                    <div class="flex items-start justify-between gap-3 border-b border-gray-100 bg-gradient-to-b from-gray-50 to-white px-8 py-6">
                                         <div>
                                             <h3 class="text-base font-bold text-gray-900">Nova categoria</h3>
                                             <p class="mt-0.5 text-sm text-gray-500">Cria a categoria e já volta selecionada.</p>
@@ -99,7 +99,7 @@
                                     <form
                                         action="{{ route('financeiro.categorias_despesas_fixas.store') }}"
                                         method="post"
-                                        class="space-y-5 px-6 py-6 sm:px-8 sm:py-7"
+                                        class="space-y-6 px-8 py-7 sm:px-10 sm:py-9"
                                     >
                                         @csrf
                                         <div>
@@ -123,7 +123,7 @@
                                                 class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
                                             />
                                         </div>
-                                        <div class="flex flex-col-reverse justify-end gap-2 border-t border-gray-100 pt-5 sm:flex-row">
+                                        <div class="flex flex-col-reverse justify-end gap-3 border-t border-gray-100 pt-6 sm:flex-row">
                                             <button type="button" class="btn-pdv btn-pdv-secondary px-5 py-2.5" @click="showCatModal = false">
                                                 Cancelar
                                             </button>
