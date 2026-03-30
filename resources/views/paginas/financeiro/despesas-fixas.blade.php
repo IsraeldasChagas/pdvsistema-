@@ -99,37 +99,39 @@
                                     <form
                                         action="{{ route('financeiro.categorias_despesas_fixas.store') }}"
                                         method="post"
-                                        class="space-y-6 px-10 py-8 sm:px-12 sm:py-10"
+                                        class="px-10 py-8 sm:px-14 sm:py-12"
                                     >
                                         @csrf
-                                        <div>
-                                            <label for="cat_nome" class="block text-sm font-bold text-gray-900">Nome</label>
-                                            <input
-                                                id="cat_nome"
-                                                name="nome"
-                                                type="text"
-                                                placeholder="Ex: Utilidades"
-                                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label for="cat_cor" class="block text-sm font-bold text-gray-900">Cor (opcional)</label>
-                                            <input
-                                                id="cat_cor"
-                                                name="cor"
-                                                type="text"
-                                                placeholder="Ex: #2563eb"
-                                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                                            />
-                                        </div>
-                                        <div class="flex flex-col-reverse justify-end gap-3 border-t border-gray-100 pb-1 pt-7 sm:flex-row">
-                                            <button type="button" class="btn-pdv btn-pdv-secondary px-5 py-2.5" @click="showCatModal = false">
-                                                Cancelar
-                                            </button>
-                                            <button type="submit" class="btn-pdv btn-pdv-primary px-6 py-2.5">
-                                                Salvar
-                                            </button>
+                                        <div class="mx-auto max-w-md space-y-7">
+                                            <div class="space-y-1.5">
+                                                <label for="cat_nome" class="block text-sm font-bold text-gray-900">Nome</label>
+                                                <input
+                                                    id="cat_nome"
+                                                    name="nome"
+                                                    type="text"
+                                                    placeholder="Ex: Utilidades"
+                                                    class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                                    required
+                                                />
+                                            </div>
+                                            <div class="space-y-1.5">
+                                                <label for="cat_cor" class="block text-sm font-bold text-gray-900">Cor (opcional)</label>
+                                                <input
+                                                    id="cat_cor"
+                                                    name="cor"
+                                                    type="text"
+                                                    placeholder="Ex: #2563eb"
+                                                    class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                                />
+                                            </div>
+                                            <div class="flex flex-col-reverse justify-end gap-3 border-t border-gray-100 pt-7 sm:flex-row">
+                                                <button type="button" class="btn-pdv btn-pdv-secondary px-6 py-2.5" @click="showCatModal = false">
+                                                    Cancelar
+                                                </button>
+                                                <button type="submit" class="btn-pdv btn-pdv-primary px-7 py-2.5">
+                                                    Salvar
+                                                </button>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
