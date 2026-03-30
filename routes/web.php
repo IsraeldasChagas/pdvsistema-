@@ -101,6 +101,8 @@ Route::middleware(['auth', 'verified', 'super.panel', 'pdv.screen'])->group(func
     Route::get('/financeiro/categorias-despesas-fixas', [FinanceiroController::class, 'categoriasDespesasFixas'])->name('financeiro.categorias_despesas_fixas');
     Route::post('/financeiro/categorias-despesas-fixas', [FinanceiroController::class, 'storeCategoriaDespesasFixas'])->name('financeiro.categorias_despesas_fixas.store');
     Route::get('/financeiro/despesas-variaveis', [FinanceiroController::class, 'despesasVariaveis'])->name('financeiro.despesas_variaveis');
+    Route::post('/financeiro/despesas-variaveis', [FinanceiroController::class, 'storeDespesasVariaveis'])->name('financeiro.despesas_variaveis.store');
+    Route::post('/financeiro/categorias-despesas-variaveis', [FinanceiroController::class, 'storeCategoriaDespesasVariaveis'])->name('financeiro.categorias_despesas_variaveis.store');
     Route::middleware('admin')->group(function () {
         Route::get('/usuarios', [UserController::class, 'index'])->name('modulos.usuarios');
         Route::get('/usuarios/novo', [UserController::class, 'create'])->name('usuarios.create');

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFixedExpenseRequest;
+use App\Http\Requests\StoreVariableExpenseRequest;
 use App\Models\FixedExpense;
 use App\Models\FixedExpenseCategory;
+use App\Models\VariableExpense;
+use App\Models\VariableExpenseCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -31,7 +34,79 @@ class FinanceiroController extends Controller
 
     public function despesasVariaveis(): View
     {
-        return view('paginas.financeiro.despesas-variaveis');
+        $rows = VariableExpense::query()
+            ->with('category')
+            ->orderByDesc('data_despesa')
+            ->orderByDesc('created_at')
+            ->limit(200)
+            ->get();
+
+        $categorias = VariableExpenseCategory::query()->orderBy('nome')->get(['id', 'nome']);
+
+        return view('paginas.financeiro.despesas-variaveis', [
+            'rows' => $rows,
+            'categorias' => $categorias,
+        ]);
+    }
+
+    public function storeCategoriaDespesasVariaveis(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'nome' => ['required', 'string', 'max:80'],
+            'cor' => ['nullable', 'string', 'max:16'],
+        ], [
+            'nome.required' => 'Informe o nome da categoria.',
+        ]);
+
+        $cat = VariableExpenseCategory::query()->create([
+            'nome' => $data['nome'],
+            'cor' => $data['cor'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('financeiro.despesas_variaveis')
+            ->with('status', 'Categoria criada.')
+            ->with('select_variable_expense_category_id', $cat->id);
+    }
+
+    public function storeDespesasVariaveis(StoreVariableExpenseRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $valor = $this->parseBrMoney($data['valor'] ?? '0');
+        if ($valor <= 0) {
+            return back()->withInput()->withErrors(['valor' => 'Informe um valor maior que zero.']);
+        }
+
+        $anexoPath = null;
+        if ($request->hasFile('anexo')) {
+            $file = $request->file('anexo');
+            if ($file && $file->isValid()) {
+                $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'bin');
+                $ext = preg_replace('/[^a-z0-9]/', '', $ext) ?: 'bin';
+                $name = 'variable-expenses/'.Str::uuid()->toString().'.'.$ext;
+                $stored = Storage::disk('pdv_public')->putFileAs('', $file, $name);
+                $anexoPath = $stored ?: null;
+            }
+        }
+
+        VariableExpense::query()->create([
+            'descricao' => $data['descricao'],
+            'variable_expense_category_id' => $data['variable_expense_category_id'] ?? null,
+            'valor' => $valor,
+            'data_despesa' => $data['data_despesa'],
+            'forma_pagamento' => $data['forma_pagamento'] ?? null,
+            'fornecedor_nome' => $data['fornecedor_nome'] ?? null,
+            'fornecedor_doc' => $data['fornecedor_doc'] ?? null,
+            'centro_custo' => $data['centro_custo'] ?? null,
+            'conta' => $data['conta'] ?? null,
+            'observacoes' => $data['observacoes'] ?? null,
+            'anexo_path' => $anexoPath,
+        ]);
+
+        return redirect()
+            ->route('financeiro.despesas_variaveis')
+            ->with('status', 'Despesa variável cadastrada.');
     }
 
     public function categoriasDespesasFixas(): View
