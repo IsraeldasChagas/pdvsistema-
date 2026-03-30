@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CashSale;
+use App\Models\CashFlowEntry;
 use App\Models\FixedExpense;
 use App\Models\VariableExpense;
 use Carbon\Carbon;
@@ -43,6 +44,7 @@ class FluxoCaixaService
         $this->addCashSales($inicio, $fim, $daily);
         $this->addVariableExpenses($inicio, $fim, $daily);
         $this->addFixedMonthlyEstimates($inicio, $fim, $daily);
+        $this->addManualEntries($inicio, $fim, $daily);
 
         $labels = [];
         $labelsShort = [];
@@ -131,6 +133,30 @@ class FluxoCaixaService
     }
 
     /**
+     * Lançamentos manuais: soma em entradas/saídas no dia.
+     *
+     * @param array<string, array{entradas: float, saidas_variaveis: float, saidas_fixas_estimadas: float}> $daily
+     */
+    private function addManualEntries(Carbon $inicio, Carbon $fim, array &$daily): void
+    {
+        CashFlowEntry::query()
+            ->whereBetween('data_movimento', [$inicio->toDateString(), $fim->toDateString()])
+            ->get(['tipo', 'valor', 'data_movimento'])
+            ->each(function ($row) use (&$daily): void {
+                $k = $row->data_movimento->format('Y-m-d');
+                if (! isset($daily[$k])) {
+                    return;
+                }
+
+                if ($row->tipo === 'entrada') {
+                    $daily[$k]['entradas'] += (float) $row->valor;
+                } else {
+                    $daily[$k]['saidas_variaveis'] += (float) $row->valor;
+                }
+            });
+    }
+
+    /**
      * Despesas fixas mensais ativas: 1 ocorrência por mês no dia de vencimento (estimativa).
      *
      * @param array<string, array{entradas: float, saidas_variaveis: float, saidas_fixas_estimadas: float}> $daily
@@ -215,6 +241,7 @@ class FluxoCaixaService
         return [
             'Entradas: vendas registradas no caixa (PDV).',
             'Saídas variáveis: lançamentos pela data da despesa.',
+            'Lançamentos manuais: entram no dia do movimento (entrada ou saída).',
             'Saídas fixas: estimativa mensal (apenas periodicidade “Mensal”, status Ativo), no dia de vencimento.',
             'Despesas fixas semanais/anuais/outras não entram neste gráfico.',
         ];

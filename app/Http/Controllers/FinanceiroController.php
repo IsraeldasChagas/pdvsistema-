@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFixedExpenseRequest;
+use App\Http\Requests\StoreCashFlowEntryRequest;
 use App\Http\Requests\StoreVariableExpenseRequest;
+use App\Models\CashFlowEntry;
 use App\Models\FixedExpense;
 use App\Models\FixedExpenseCategory;
 use App\Models\VariableExpense;
@@ -54,11 +56,54 @@ class FinanceiroController extends Controller
 
         $fluxo = (new FluxoCaixaService)->build($inicio, $fim);
 
+        $lancamentos = CashFlowEntry::query()
+            ->with('user')
+            ->whereBetween('data_movimento', [$inicio->toDateString(), $fim->toDateString()])
+            ->orderByDesc('data_movimento')
+            ->orderByDesc('created_at')
+            ->limit(200)
+            ->get();
+
         return view('paginas.financeiro.fluxo-caixa', [
             'fluxo' => $fluxo,
             'inicio' => $inicio->toDateString(),
             'fim' => $fim->toDateString(),
+            'lancamentos' => $lancamentos,
         ]);
+    }
+
+    public function storeLancamentoManual(StoreCashFlowEntryRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $valor = $this->parseBrMoney($data['valor'] ?? '0');
+        if ($valor <= 0) {
+            return back()->withInput()->withErrors(['valor' => 'Informe um valor maior que zero.']);
+        }
+
+        CashFlowEntry::query()->create([
+            'user_id' => auth()->id(),
+            'tipo' => $data['tipo'],
+            'data_movimento' => $data['data_movimento'],
+            'valor' => $valor,
+            'categoria' => $data['categoria'] ?? null,
+            'origem' => $data['origem'] ?? null,
+            'descricao' => $data['descricao'],
+            'observacoes' => $data['observacoes'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('financeiro.fluxo_caixa', $request->only(['inicio', 'fim']))
+            ->with('status', 'Lançamento manual criado.');
+    }
+
+    public function destroyLancamentoManual(CashFlowEntry $entry, Request $request): RedirectResponse
+    {
+        $entry->delete();
+
+        return redirect()
+            ->route('financeiro.fluxo_caixa', $request->only(['inicio', 'fim']))
+            ->with('status', 'Lançamento removido.');
     }
 
     public function despesasVariaveis(): View

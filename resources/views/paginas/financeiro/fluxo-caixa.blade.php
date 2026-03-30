@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="min-h-[calc(100vh-3.5rem)] bg-[#f8f9fa] px-4 py-8 sm:px-6 lg:px-8">
+    <div x-data="{ showManualModal: false }" class="min-h-[calc(100vh-3.5rem)] bg-[#f8f9fa] px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-6xl">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="flex items-start gap-3">
@@ -14,7 +14,14 @@
                     </div>
                 </div>
 
-                <form method="get" action="{{ route('financeiro.fluxo_caixa') }}" class="flex flex-wrap items-end gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div class="flex flex-col items-stretch gap-3 sm:flex-row sm:items-end">
+                    <div class="sm:order-2">
+                        <button type="button" class="btn-pdv btn-pdv-primary w-full px-4 py-2 text-sm sm:w-auto" @click="showManualModal = true">
+                            + Lançamento manual
+                        </button>
+                    </div>
+
+                    <form method="get" action="{{ route('financeiro.fluxo_caixa') }}" class="flex flex-wrap items-end gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:order-1">
                     <div>
                         <label for="inicio" class="block text-xs font-bold uppercase tracking-wide text-gray-500">Início</label>
                         <input
@@ -36,7 +43,8 @@
                         />
                     </div>
                     <button type="submit" class="btn-pdv btn-pdv-primary px-4 py-2 text-sm">Atualizar</button>
-                </form>
+                    </form>
+                </div>
             </div>
 
             @php
@@ -132,6 +140,192 @@
                     </div>
                 </section>
             </div>
+
+            <section class="mt-8 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div class="border-b border-gray-100 px-5 py-4">
+                    <h2 class="text-base font-bold text-gray-900">Lançamentos manuais</h2>
+                    <p class="mt-0.5 text-sm text-gray-500">Entradas/saídas lançadas manualmente (ajustes, retiradas, aportes, pagamentos fora do PDV).</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">Data</th>
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">Tipo</th>
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">Descrição</th>
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">Categoria</th>
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">Origem</th>
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold text-gray-700">Valor</th>
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold text-gray-700"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 bg-white">
+                            @forelse ($lancamentos as $e)
+                                <tr class="hover:bg-gray-50/80">
+                                    <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $e->data_movimento?->format('d/m/Y') ?? '—' }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3">
+                                        @if ($e->tipo === 'entrada')
+                                            <span class="inline-flex rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">Entrada</span>
+                                        @else
+                                            <span class="inline-flex rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-medium text-rose-800">Saída</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 font-medium text-gray-900">{{ $e->descricao }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $e->categoria ?: '—' }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $e->origem ?: '—' }}</td>
+                                    <td class="whitespace-nowrap px-4 py-3 font-semibold {{ $e->tipo === 'entrada' ? 'text-emerald-700' : 'text-rose-700' }}">
+                                        R$ {{ number_format((float) $e->valor, 2, ',', '.') }}
+                                    </td>
+                                    <td class="whitespace-nowrap px-4 py-3 text-right">
+                                        <form method="post" action="{{ route('financeiro.fluxo_caixa.lancamentos.destroy', $e) }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <input type="hidden" name="inicio" value="{{ $inicio }}">
+                                            <input type="hidden" name="fim" value="{{ $fim }}">
+                                            <button type="submit" class="btn-pdv-ghost btn-pdv-ghost-red px-3 py-1.5 text-xs">Excluir</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-4 py-10 text-center text-sm text-gray-500">
+                                        Nenhum lançamento manual no período.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div
+            x-show="showManualModal"
+            x-cloak
+            class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-6 backdrop-blur-[2px] sm:items-center sm:p-12"
+            @click="showManualModal = false"
+        >
+        <div
+            @click.stop
+            class="w-full max-w-xl overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/10"
+        >
+            <form
+                action="{{ route('financeiro.fluxo_caixa.lancamentos.store') }}"
+                method="post"
+                class="px-10 py-9 pb-14 sm:px-14 sm:py-12 sm:pb-16"
+            >
+                @csrf
+                <input type="hidden" name="inicio" value="{{ $inicio }}">
+                <input type="hidden" name="fim" value="{{ $fim }}">
+
+                <div class="mx-auto max-w-md space-y-7">
+                    <div class="space-y-1.5 pb-1">
+                        <h3 class="text-lg font-bold tracking-tight text-gray-900">Lançamento manual</h3>
+                        <p class="text-sm leading-relaxed text-gray-500">Registre uma entrada/saída que não veio do PDV automaticamente.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="man_tipo" class="block text-sm font-bold text-gray-900">Tipo</label>
+                            <select
+                                id="man_tipo"
+                                name="tipo"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                required
+                            >
+                                @php
+                                    $tSel = old('tipo', 'saida');
+                                @endphp
+                                <option value="saida" @selected($tSel === 'saida')>Saída</option>
+                                <option value="entrada" @selected($tSel === 'entrada')>Entrada</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="man_data" class="block text-sm font-bold text-gray-900">Data</label>
+                            <input
+                                id="man_data"
+                                name="data_movimento"
+                                type="date"
+                                value="{{ old('data_movimento', now()->format('Y-m-d')) }}"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label for="man_valor" class="block text-sm font-bold text-gray-900">Valor</label>
+                            <input
+                                id="man_valor"
+                                name="valor"
+                                type="text"
+                                value="{{ old('valor') }}"
+                                placeholder="Ex: 80,00"
+                                inputmode="decimal"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label for="man_origem" class="block text-sm font-bold text-gray-900">Origem (opcional)</label>
+                            <input
+                                id="man_origem"
+                                name="origem"
+                                type="text"
+                                value="{{ old('origem') }}"
+                                placeholder="Ex: Caixa, Banco, Cartão"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                            />
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="man_desc" class="block text-sm font-bold text-gray-900">Descrição</label>
+                            <input
+                                id="man_desc"
+                                name="descricao"
+                                type="text"
+                                value="{{ old('descricao') }}"
+                                placeholder="Ex: Retirada, Aporte, Pagamento de taxa"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                required
+                            />
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="man_cat" class="block text-sm font-bold text-gray-900">Categoria (opcional)</label>
+                            <input
+                                id="man_cat"
+                                name="categoria"
+                                type="text"
+                                value="{{ old('categoria') }}"
+                                placeholder="Ex: Retirada, Impostos, Ajuste"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                            />
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="man_obs" class="block text-sm font-bold text-gray-900">Observações (opcional)</label>
+                            <textarea
+                                id="man_obs"
+                                name="observacoes"
+                                rows="3"
+                                class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                            >{{ old('observacoes') }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-row flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-6">
+                        <button type="button" class="btn-pdv-ghost btn-pdv-ghost-red px-6 py-2.5" @click="showManualModal = false">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-pdv btn-pdv-primary px-7 py-2.5">
+                            Salvar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
         </div>
     </div>
 
