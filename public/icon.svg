@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="PDV">
-    <rect width="32" height="32" rx="7" fill="#0c1929"/>
-    <g fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" transform="translate(4 4) scale(1)">
-        <path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218a1.5 1.5 0 001.421-1.004l5.223-15.684a.75.75 0 00-1.183-.819l-2.682 8.09M7.5 14.25L5.106 5.106M7.5 14.25l-1.531 4.607M16.5 14.25l1.531-4.607M16.5 14.25h2.25M16.5 14.25H9.375"/>
-    </g>
-</svg>
