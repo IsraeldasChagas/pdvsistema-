@@ -33,7 +33,7 @@
     @endphp
 
     @if ($logoImagem !== null)
-        <div class="mb-8 flex justify-center">
+        <div class="mb-2 flex justify-center">
             <img
                 src="{{ asset($logoImagem) }}?v={{ (string) filemtime(public_path($logoImagem)) }}"
                 alt="{{ config('app.name', 'PDV') }}"
@@ -44,10 +44,9 @@
         </div>
     @endif
 
-    <h1 class="text-center text-2xl font-bold text-gray-900">{{ config('app.name', 'Sistema PDV') }}</h1>
-    <p class="mt-1 text-center text-sm text-gray-500">Entre com seu e-mail e senha</p>
+    <p class="mb-3 text-center text-sm text-gray-500">Entre com seu e-mail e senha</p>
 
-    <form method="POST" action="{{ route('login') }}" class="mt-8 space-y-5">
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
         <div>
