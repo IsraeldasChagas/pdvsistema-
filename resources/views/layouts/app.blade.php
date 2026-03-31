@@ -41,46 +41,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                             </svg>
                         </button>
-                        <button
-                            type="button"
-                            class="inline-flex rounded-lg p-2 text-gray-600 hover:bg-gray-100"
-                            @click="if (window.innerWidth >= 1024) { sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('pdv.sidebarCollapsed', sidebarCollapsed ? '1' : '0'); }"
-                            :aria-label="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
-                            :title="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
-                        >
-                            <svg x-show="!sidebarCollapsed" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                            </svg>
-                            <svg x-show="sidebarCollapsed" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-                        @if (! empty($empresaNomeOperacao))
-                            <span
-                                class="min-w-0 max-w-[min(100%,14rem)] truncate text-base font-bold tracking-tight text-gray-900 sm:max-w-[min(100%,24rem)] sm:text-lg"
-                                title="{{ $empresaNomeOperacao }}"
-                            >
-                                {{ $empresaNomeOperacao }}
-                            </span>
-                        @else
-                            <span class="shrink-0 font-bold tracking-tight text-gray-900">{{ config('pdv.brand_name') }}</span>
-                        @endif
-                        @if (auth()->user()->isSuperAdmin() && isset($empresasSwitcher) && $empresasSwitcher->isNotEmpty())
-                            <form method="post" action="{{ route('empresa.context') }}" class="ml-1 flex min-w-0 flex-1 items-center gap-2 sm:ml-2">
-                                @csrf
-                                <label for="header_company_id" class="sr-only">Trocar empresa</label>
-                                <select
-                                    id="header_company_id"
-                                    name="company_id"
-                                    onchange="this.form.submit()"
-                                    class="max-w-[min(100%,220px)] rounded-lg border border-gray-300 bg-white py-1.5 pl-2 pr-8 text-sm font-semibold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                >
-                                    @foreach ($empresasSwitcher as $ec)
-                                        <option value="{{ $ec->id }}" @selected(\App\Support\CurrentCompany::id() === $ec->id)>{{ $ec->nome }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
-                        @endif
                     </div>
                     <div class="flex items-center gap-3">
                         @php
