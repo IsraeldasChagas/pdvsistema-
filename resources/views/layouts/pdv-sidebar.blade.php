@@ -19,7 +19,6 @@
         $items = [
             ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home', 'routes' => ['dashboard'], 'hint' => null],
             ['route' => 'modulos.produtos', 'label' => 'Produtos', 'icon' => 'box', 'routes' => ['modulos.produtos'], 'hint' => null],
-            ['route' => 'modulos.categorias', 'label' => 'Categorias', 'icon' => 'grid', 'routes' => ['modulos.categorias'], 'hint' => null],
             ['route' => 'modulos.estoque', 'label' => 'Estoque', 'icon' => 'stock', 'routes' => ['modulos.estoque', 'estoque.*'], 'hint' => null],
             ['route' => 'modulos.entradas', 'label' => 'Entradas', 'icon' => 'in', 'routes' => ['modulos.entradas'], 'hint' => null],
             ['route' => 'modulos.saidas', 'label' => 'Saídas', 'icon' => 'out', 'routes' => ['modulos.saidas'], 'hint' => null],
