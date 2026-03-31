@@ -47,9 +47,10 @@
 
 <aside
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-    class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-800 bg-[#0c1929] transition-transform duration-200 ease-out lg:static"
+    class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-800 bg-[#0c1929] transition-transform duration-200 ease-out lg:static lg:transition-all lg:duration-200"
+    :class="sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'"
 >
-    <div class="flex min-h-16 shrink-0 flex-col justify-center gap-1 border-b border-slate-800 px-4 py-3">
+    <div class="flex min-h-16 shrink-0 flex-col justify-center gap-1 border-b border-slate-800 px-4 py-3" :class="sidebarCollapsed ? 'lg:px-2' : 'lg:px-4'">
         <div class="flex items-center gap-3">
             @if ($logoUrl)
                 <div class="relative h-10 w-10 shrink-0">
@@ -74,13 +75,13 @@
                     {{ $barraIniciais }}
                 </div>
             @endif
-            <div class="min-w-0 flex-1">
+            <div class="min-w-0 flex-1 sidebar-label" x-show="!sidebarCollapsed" x-cloak>
                 <span class="block truncate text-lg font-semibold tracking-tight text-white" title="{{ $barraTitulo }}">{{ $barraTitulo }}</span>
             </div>
         </div>
     </div>
 
-    <nav class="flex-1 space-y-0.5 overflow-y-auto px-2 py-4">
+    <nav class="flex-1 space-y-0.5 overflow-y-auto px-2 py-4" :class="sidebarCollapsed ? 'lg:px-1' : 'lg:px-2'">
         @if ($isSuper)
             @php
                 $empresasAtivo = request()->routeIs('empresas.*');
@@ -90,20 +91,22 @@
                 href="{{ route('empresas.index') }}"
                 @click="sidebarOpen = false"
                 class="{{ $empresasAtivo ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white' }} group flex flex-col rounded-r-lg py-2.5 pl-3 pr-2 text-sm font-medium transition-colors"
+                :class="sidebarCollapsed ? 'lg:items-center lg:pl-0 lg:pr-0' : ''"
             >
                 <span class="flex items-center gap-3">
                     @include('layouts.partials.sidebar-icon', ['name' => 'building', 'active' => $empresasAtivo])
-                    Empresas
+                    <span class="sidebar-label" x-show="!sidebarCollapsed" x-cloak>Empresas</span>
                 </span>
             </a>
             <a
                 href="{{ route('modulos.usuarios') }}"
                 @click="sidebarOpen = false"
                 class="{{ $usuariosAtivo ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white' }} group flex flex-col rounded-r-lg py-2.5 pl-3 pr-2 text-sm font-medium transition-colors"
+                :class="sidebarCollapsed ? 'lg:items-center lg:pl-0 lg:pr-0' : ''"
             >
                 <span class="flex items-center gap-3">
                     @include('layouts.partials.sidebar-icon', ['name' => 'users', 'active' => $usuariosAtivo])
-                    Usuários
+                    <span class="sidebar-label" x-show="!sidebarCollapsed" x-cloak>Usuários</span>
                 </span>
             </a>
             <div x-data="{ open: {{ $financeiroSaasOpen ? 'true' : 'false' }} }" class="space-y-0.5">
@@ -127,15 +130,17 @@
                         fill="currentColor"
                         viewBox="0 0 24 24"
                         aria-hidden="true"
+                        x-show="!sidebarCollapsed"
+                        x-cloak
                     >
                         <path d="M12 16.5l-6-6h12l-6 6z" />
                     </svg>
                     <span class="flex min-w-0 flex-1 items-center gap-3">
                         @include('layouts.partials.sidebar-icon', ['name' => 'card', 'active' => $finAtivo])
-                        <span class="truncate">Financeiro SaaS</span>
+                        <span class="truncate sidebar-label" x-show="!sidebarCollapsed" x-cloak>Financeiro SaaS</span>
                     </span>
                 </button>
-                <div x-show="open" x-cloak class="mt-0.5 space-y-0.5 border-l border-slate-700/80 pl-2 ml-3">
+                <div x-show="open && !sidebarCollapsed" x-cloak class="mt-0.5 ml-3 space-y-0.5 border-l border-slate-700/80 pl-2">
                     @foreach ($finSub as $sub)
                         @php
                             $subActive = collect($sub['routes'])->contains(fn ($r) => request()->routeIs($r));
@@ -162,6 +167,7 @@
                             type="button"
                             @click="open = !open"
                             class="{{ $active ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white' }} group flex w-full items-center gap-2 rounded-r-lg py-2.5 pl-2 pr-2 text-left text-sm font-medium transition-colors"
+                            :class="sidebarCollapsed ? 'lg:justify-center lg:pl-0 lg:pr-0' : ''"
                         >
                             <svg
                                 class="h-4 w-4 shrink-0 text-current transition-transform"
@@ -169,15 +175,17 @@
                                 fill="currentColor"
                                 viewBox="0 0 24 24"
                                 aria-hidden="true"
+                                x-show="!sidebarCollapsed"
+                                x-cloak
                             >
                                 <path d="M12 16.5l-6-6h12l-6 6z" />
                             </svg>
                             <span class="flex min-w-0 flex-1 items-center gap-3">
                                 @include('layouts.partials.sidebar-icon', ['name' => $item['icon'], 'active' => $active])
-                                <span class="truncate">{{ $item['label'] }}</span>
+                                <span class="truncate sidebar-label" x-show="!sidebarCollapsed" x-cloak>{{ $item['label'] }}</span>
                             </span>
                         </button>
-                        <div x-show="open" x-cloak class="mt-0.5 space-y-0.5 border-l border-slate-700/80 pl-2 ml-3">
+                        <div x-show="open && !sidebarCollapsed" x-cloak class="mt-0.5 ml-3 space-y-0.5 border-l border-slate-700/80 pl-2">
                             @foreach ($item['children'] as $sub)
                                 @php
                                     $subActive = collect($sub['routes'])->contains(fn ($r) => request()->routeIs($r));
@@ -198,13 +206,14 @@
                         href="{{ route($item['route']) }}"
                         @click="sidebarOpen = false"
                         class="{{ $active ? 'border-l-4 border-blue-500 bg-blue-600 text-white' : 'border-l-4 border-transparent text-slate-300 hover:bg-slate-800/80 hover:text-white' }} group flex flex-col rounded-r-lg py-2.5 pl-3 pr-2 text-sm font-medium transition-colors"
+                        :class="sidebarCollapsed ? 'lg:items-center lg:pl-0 lg:pr-0' : ''"
                     >
                         <span class="flex items-center gap-3">
                             @include('layouts.partials.sidebar-icon', ['name' => $item['icon'], 'active' => $active])
-                            {{ $item['label'] }}
+                            <span class="sidebar-label" x-show="!sidebarCollapsed" x-cloak>{{ $item['label'] }}</span>
                         </span>
                         @if (! empty($item['hint']))
-                            <span class="mt-0.5 pl-8 text-xs font-normal text-amber-300/90">{{ $item['hint'] }}</span>
+                            <span class="sidebar-label mt-0.5 pl-8 text-xs font-normal text-amber-300/90" x-show="!sidebarCollapsed" x-cloak>{{ $item['hint'] }}</span>
                         @endif
                     </a>
                 @endif

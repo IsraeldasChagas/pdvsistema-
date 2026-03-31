@@ -20,7 +20,17 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-gray-900" x-data="{ sidebarOpen: false }">
+    <body
+        class="font-sans antialiased text-gray-900"
+        x-data="{
+            sidebarOpen: false,
+            sidebarCollapsed: localStorage.getItem('pdv.sidebarCollapsed') === '1',
+            toggleSidebarCollapse() {
+                this.sidebarCollapsed = !this.sidebarCollapsed;
+                localStorage.setItem('pdv.sidebarCollapsed', this.sidebarCollapsed ? '1' : '0');
+            }
+        }"
+    >
         <div class="flex min-h-screen bg-zinc-100">
             @include('layouts.pdv-sidebar')
 
@@ -35,6 +45,20 @@
                         >
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                            </svg>
+                        </button>
+                        <button
+                            type="button"
+                            class="hidden rounded-lg p-2 text-gray-600 hover:bg-gray-100 lg:inline-flex"
+                            @click="toggleSidebarCollapse()"
+                            :aria-label="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
+                            :title="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
+                        >
+                            <svg x-show="!sidebarCollapsed" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                            <svg x-show="sidebarCollapsed" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                             </svg>
                         </button>
                         @if (! empty($empresaNomeOperacao))
