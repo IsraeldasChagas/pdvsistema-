@@ -46,7 +46,7 @@ class UpdateUserRequest extends FormRequest
             'vendedor_rua' => ['sometimes', 'boolean'],
             'is_active' => ['sometimes', 'boolean'],
             'screens' => [
-                Rule::requiredIf(fn () => in_array($this->input('role'), ['vendedor', 'gerente'], true)),
+                Rule::requiredIf(fn () => $this->input('role') !== 'super_admin'),
                 'array',
                 'min:1',
             ],
@@ -63,8 +63,8 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'screens.required_if' => 'Selecione ao menos uma tela permitida para o cargo Vendedor ou Gerente.',
-            'screens.min' => 'Selecione ao menos uma tela permitida para o cargo Vendedor ou Gerente.',
+            'screens.required_if' => 'Selecione ao menos uma tela permitida para o usuário.',
+            'screens.min' => 'Selecione ao menos uma tela permitida para o usuário.',
             'company_id.required_if' => 'Selecione a empresa.',
         ];
     }

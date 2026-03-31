@@ -35,14 +35,6 @@ class EnsurePdvScreenAccess
 
         $screen = $this->resolveScreen($request);
 
-        if ($user->isAdministrador()) {
-            if ($screen !== null && ! $user->hasScreenAccess($screen)) {
-                abort(403, 'Sem permissão para acessar esta tela.');
-            }
-
-            return $next($request);
-        }
-
         if ($screen === null) {
             return $next($request);
         }

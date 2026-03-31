@@ -154,7 +154,7 @@ class User extends Authenticatable
      */
     public function syncAllowedScreensFromInput(?array $screens, string $role): void
     {
-        if ($role === 'administrador' || $role === 'super_admin') {
+        if ($role === 'super_admin') {
             $this->allowed_screens = null;
 
             return;
@@ -179,11 +179,12 @@ class User extends Authenticatable
             return false;
         }
 
-        if ($this->isAdministrador()) {
+        // Compatibilidade com dados legados: null = acesso total (exceto bloqueios por empresa).
+        if ($this->allowed_screens === null) {
             return true;
         }
 
-        $screens = $this->allowed_screens ?? [];
+        $screens = $this->allowed_screens;
 
         return in_array($key, $screens, true);
     }
@@ -196,11 +197,15 @@ class User extends Authenticatable
 
     public function screensCheckedForForm(): array
     {
-        if ($this->isSuperAdmin() || $this->isAdministrador()) {
+        if ($this->isSuperAdmin()) {
             return collect(config('pdv.screens', []))->pluck('key')->all();
         }
 
-        return $this->allowed_screens ?? $this->defaultScreensCheckedForForm();
+        if ($this->allowed_screens === null) {
+            return collect(config('pdv.screens', []))->pluck('key')->all();
+        }
+
+        return $this->allowed_screens;
     }
 
     /**

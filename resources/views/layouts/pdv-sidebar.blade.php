@@ -17,28 +17,29 @@
         $pdvHint = $caixaAberto ? 'Caixa aberto' : 'Abra seu caixa';
 
         $items = [
-            ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home', 'routes' => ['dashboard'], 'hint' => null],
-            ['route' => 'modulos.produtos', 'label' => 'Produtos', 'icon' => 'box', 'routes' => ['modulos.produtos'], 'hint' => null],
-            ['route' => 'modulos.estoque', 'label' => 'Estoque', 'icon' => 'stock', 'routes' => ['modulos.estoque', 'estoque.*'], 'hint' => null],
-            ['route' => 'modulos.entradas', 'label' => 'Entradas', 'icon' => 'in', 'routes' => ['modulos.entradas'], 'hint' => null],
-            ['route' => 'modulos.saidas', 'label' => 'Saídas', 'icon' => 'out', 'routes' => ['modulos.saidas'], 'hint' => null],
-            ['route' => 'modulos.entregas', 'label' => 'Entregas', 'icon' => 'truck', 'routes' => ['modulos.entregas'], 'hint' => null],
-            ['route' => 'modulos.venda', 'label' => 'Mini PDV', 'icon' => 'pdv', 'hint' => $pdvHint, 'routes' => ['modulos.venda']],
-            ['route' => 'modulos.caixa', 'label' => 'Caixa', 'icon' => 'cash', 'routes' => ['modulos.caixa'], 'hint' => null],
-            ['route' => 'modulos.comissoes', 'label' => 'Comissões', 'icon' => 'coin', 'routes' => ['modulos.comissoes', 'comissoes.*'], 'hint' => null],
+            ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home', 'routes' => ['dashboard'], 'hint' => null, 'screen' => 'dashboard'],
+            ['route' => 'modulos.produtos', 'label' => 'Produtos', 'icon' => 'box', 'routes' => ['modulos.produtos'], 'hint' => null, 'screen' => 'produtos'],
+            ['route' => 'modulos.estoque', 'label' => 'Estoque', 'icon' => 'stock', 'routes' => ['modulos.estoque', 'estoque.*'], 'hint' => null, 'screen' => 'estoque'],
+            ['route' => 'modulos.entradas', 'label' => 'Entradas', 'icon' => 'in', 'routes' => ['modulos.entradas'], 'hint' => null, 'screen' => 'entradas'],
+            ['route' => 'modulos.saidas', 'label' => 'Saídas', 'icon' => 'out', 'routes' => ['modulos.saidas'], 'hint' => null, 'screen' => 'saidas'],
+            ['route' => 'modulos.entregas', 'label' => 'Entregas', 'icon' => 'truck', 'routes' => ['modulos.entregas'], 'hint' => null, 'screen' => 'entregas'],
+            ['route' => 'modulos.venda', 'label' => 'Mini PDV', 'icon' => 'pdv', 'hint' => $pdvHint, 'routes' => ['modulos.venda'], 'screen' => 'mini_pdv'],
+            ['route' => 'modulos.caixa', 'label' => 'Caixa', 'icon' => 'cash', 'routes' => ['modulos.caixa'], 'hint' => null, 'screen' => 'caixa'],
+            ['route' => 'modulos.comissoes', 'label' => 'Comissões', 'icon' => 'coin', 'routes' => ['modulos.comissoes', 'comissoes.*'], 'hint' => null, 'screen' => 'comissoes'],
             [
                 'label' => 'Financeiro',
                 'icon' => 'card',
                 'routes' => ['financeiro.*'],
+                'screen' => 'financeiro',
                 'children' => [
                     ['route' => 'financeiro.fluxo_caixa', 'label' => 'Fluxo de caixa', 'icon' => 'chart', 'routes' => ['financeiro.fluxo_caixa']],
                     ['route' => 'financeiro.despesas_fixas', 'label' => 'Despesas Fixas', 'icon' => 'clipboard-plan', 'routes' => ['financeiro.despesas_fixas']],
                     ['route' => 'financeiro.despesas_variaveis', 'label' => 'Despesas Variáveis', 'icon' => 'coin', 'routes' => ['financeiro.despesas_variaveis']],
                 ],
             ],
-            ['route' => 'modulos.relatorios', 'label' => 'Relatórios', 'icon' => 'chart', 'routes' => ['modulos.relatorios'], 'hint' => null],
-            ['route' => 'modulos.usuarios', 'label' => 'Usuários', 'icon' => 'users', 'routes' => ['modulos.usuarios', 'usuarios.*'], 'hint' => null],
-            ['route' => 'modulos.configuracoes', 'label' => 'Configurações', 'icon' => 'settings', 'routes' => ['modulos.configuracoes'], 'hint' => null],
+            ['route' => 'modulos.relatorios', 'label' => 'Relatórios', 'icon' => 'chart', 'routes' => ['modulos.relatorios'], 'hint' => null, 'screen' => 'relatorios'],
+            ['route' => 'modulos.usuarios', 'label' => 'Usuários', 'icon' => 'users', 'routes' => ['modulos.usuarios', 'usuarios.*'], 'hint' => null, 'screen' => 'usuarios'],
+            ['route' => 'modulos.configuracoes', 'label' => 'Configurações', 'icon' => 'settings', 'routes' => ['modulos.configuracoes'], 'hint' => null, 'screen' => 'configuracoes'],
         ];
         $logoUrl = $pdvSetting?->logoPublicUrl();
     }
@@ -174,6 +175,10 @@
         @else
             @foreach ($items as $item)
                 @php
+                    $screenKey = $item['screen'] ?? null;
+                    if ($screenKey !== null && ! auth()->user()->hasScreenAccess($screenKey)) {
+                        continue;
+                    }
                     $active = collect($item['routes'])->contains(fn ($r) => request()->routeIs($r));
                 @endphp
                 @if (isset($item['children']))
