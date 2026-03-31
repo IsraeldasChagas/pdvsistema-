@@ -48,9 +48,9 @@
 <aside
     :class="[
         sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-        sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'
+        sidebarCollapsed ? 'w-20 lg:w-20' : 'w-64 lg:w-64'
     ]"
-    class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-800 bg-[#0c1929] transition-transform duration-200 ease-out lg:static lg:transition-all lg:duration-200"
+    class="fixed inset-y-0 left-0 z-40 flex flex-col border-r border-slate-800 bg-[#0c1929] transition-transform duration-200 ease-out lg:static lg:transition-all lg:duration-200"
 >
     <div class="flex min-h-16 shrink-0 flex-col justify-center gap-1 border-b border-slate-800 px-4 py-3" :class="sidebarCollapsed ? 'lg:px-2' : 'lg:px-4'">
         <div class="flex items-center gap-3">
@@ -82,8 +82,8 @@
             </div>
             <button
                 type="button"
-                class="hidden rounded-md border border-slate-600 bg-slate-800 px-2 py-1 text-xs font-semibold text-white hover:bg-slate-700 lg:inline-flex"
-                @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('pdv.sidebarCollapsed', sidebarCollapsed ? '1' : '0')"
+                class="inline-flex rounded-md border border-slate-600 bg-slate-800 px-2 py-1 text-xs font-semibold text-white hover:bg-slate-700"
+                @click="if (window.innerWidth >= 1024) { sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('pdv.sidebarCollapsed', sidebarCollapsed ? '1' : '0'); }"
                 x-text="sidebarCollapsed ? 'Expandir' : 'Recolher'"
                 :aria-label="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
                 :title="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"

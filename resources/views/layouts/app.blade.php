@@ -23,7 +23,7 @@
     <body
         class="font-sans antialiased text-gray-900"
         x-data="{ sidebarOpen: false, sidebarCollapsed: false }"
-        x-init="sidebarCollapsed = localStorage.getItem('pdv.sidebarCollapsed') === '1'"
+        x-init="sidebarCollapsed = window.innerWidth >= 1024 && localStorage.getItem('pdv.sidebarCollapsed') === '1'"
     >
         <div class="flex min-h-screen bg-zinc-100">
             @include('layouts.pdv-sidebar')
@@ -43,8 +43,8 @@
                         </button>
                         <button
                             type="button"
-                            class="hidden rounded-lg p-2 text-gray-600 hover:bg-gray-100 md:inline-flex"
-                            @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('pdv.sidebarCollapsed', sidebarCollapsed ? '1' : '0')"
+                            class="inline-flex rounded-lg p-2 text-gray-600 hover:bg-gray-100"
+                            @click="if (window.innerWidth >= 1024) { sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('pdv.sidebarCollapsed', sidebarCollapsed ? '1' : '0'); }"
                             :aria-label="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
                             :title="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
                         >
