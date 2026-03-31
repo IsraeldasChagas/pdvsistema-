@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
@@ -16,6 +17,7 @@ use Illuminate\Support\Collection;
  * @property bool $ativo
  * @property bool $billing_blocked
  * @property list<string>|null $allowed_screens
+ * @property int|null $saas_plan_id
  */
 class Company extends Model
 {
@@ -25,6 +27,7 @@ class Company extends Model
         'endereco',
         'telefone',
         'email',
+        'saas_plan_id',
         'ativo',
         'billing_blocked',
         'allowed_screens',
@@ -35,6 +38,7 @@ class Company extends Model
         return [
             'ativo' => 'boolean',
             'billing_blocked' => 'boolean',
+            'saas_plan_id' => 'integer',
             'allowed_screens' => 'array',
         ];
     }
@@ -140,5 +144,13 @@ class Company extends Model
     public function saasCharges(): HasMany
     {
         return $this->hasMany(SaasCharge::class);
+    }
+
+    /**
+     * @return BelongsTo<SaasPlan, $this>
+     */
+    public function saasPlan(): BelongsTo
+    {
+        return $this->belongsTo(SaasPlan::class, 'saas_plan_id');
     }
 }

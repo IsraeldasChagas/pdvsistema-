@@ -89,6 +89,22 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+                <div>
+                    <label for="saas_plan_id" class="block text-sm font-medium text-gray-700">Plano de cobrança</label>
+                    <select
+                        name="saas_plan_id"
+                        id="saas_plan_id"
+                        class="mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('saas_plan_id') border-red-500 @enderror"
+                    >
+                        <option value="">Sem plano</option>
+                        @foreach ($planos as $plano)
+                            <option value="{{ $plano->id }}" @selected((string) old('saas_plan_id', $empresa->saas_plan_id) === (string) $plano->id)>{{ $plano->nome }}</option>
+                        @endforeach
+                    </select>
+                    @error('saas_plan_id')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 @include('paginas.empresas.partials.telas-form', ['checked' => $telasChecked])
 

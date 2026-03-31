@@ -30,6 +30,7 @@
                                 <th class="px-4 py-3 font-semibold text-gray-700 sm:px-6">Nome</th>
                                 <th class="px-4 py-3 font-semibold text-gray-700 sm:px-6">CNPJ</th>
                                 <th class="px-4 py-3 font-semibold text-gray-700 sm:px-6">E-mail</th>
+                                <th class="px-4 py-3 font-semibold text-gray-700 sm:px-6">Plano</th>
                                 <th class="px-4 py-3 font-semibold text-gray-700 sm:px-6">Status</th>
                                 <th class="px-4 py-3 font-semibold text-gray-700 sm:px-6">Ações</th>
                             </tr>
@@ -40,6 +41,7 @@
                                     <td class="px-4 py-3 font-medium text-gray-900 sm:px-6">{{ $e->nome }}</td>
                                     <td class="px-4 py-3 text-gray-600 sm:px-6">{{ $e->cnpj ?: '—' }}</td>
                                     <td class="px-4 py-3 text-gray-600 sm:px-6">{{ $e->email ?: '—' }}</td>
+                                    <td class="px-4 py-3 text-gray-600 sm:px-6">{{ $e->saasPlan?->nome ?? '—' }}</td>
                                     <td class="px-4 py-3 sm:px-6">
                                         @if ($e->ativo)
                                             <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">Ativo</span>
@@ -59,7 +61,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-8 text-center text-gray-500">Nenhuma empresa cadastrada.</td>
+                                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">Nenhuma empresa cadastrada.</td>
                                 </tr>
                             @endforelse
                         </tbody>

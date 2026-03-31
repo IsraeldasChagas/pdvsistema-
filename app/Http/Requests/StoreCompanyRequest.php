@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Company;
+use App\Models\SaasPlan;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -41,6 +42,7 @@ class StoreCompanyRequest extends FormRequest
             'endereco' => ['nullable', 'string', 'max:500'],
             'telefone' => ['nullable', 'string', 'max:32'],
             'email' => ['nullable', 'email', 'max:255'],
+            'saas_plan_id' => ['nullable', 'integer', Rule::exists(SaasPlan::class, 'id')],
             'admin_nome' => ['required', 'string', 'max:255'],
             'admin_email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],

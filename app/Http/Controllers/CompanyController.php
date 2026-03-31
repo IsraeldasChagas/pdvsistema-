@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
 use App\Models\PdvSetting;
+use App\Models\SaasPlan;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -15,14 +16,22 @@ class CompanyController extends Controller
 {
     public function index(): View
     {
-        $empresas = Company::query()->orderBy('nome')->get();
+        $empresas = Company::query()
+            ->with('saasPlan:id,nome')
+            ->orderBy('nome')
+            ->get();
 
         return view('paginas.empresas.index', compact('empresas'));
     }
 
     public function create(): View
     {
-        return view('paginas.empresas.create');
+        $planos = SaasPlan::query()
+            ->where('ativo', true)
+            ->orderBy('nome')
+            ->get(['id', 'nome']);
+
+        return view('paginas.empresas.create', compact('planos'));
     }
 
     public function store(StoreCompanyRequest $request): RedirectResponse
@@ -37,6 +46,7 @@ class CompanyController extends Controller
                 'endereco' => $data['endereco'] ?? null,
                 'telefone' => $data['telefone'] ?? null,
                 'email' => $data['email'] ?? null,
+                'saas_plan_id' => $data['saas_plan_id'] ?? null,
                 'ativo' => true,
                 'billing_blocked' => false,
                 'allowed_screens' => $telas !== [] ? $telas : Company::tenantSelectableScreenKeys(),
@@ -73,7 +83,12 @@ class CompanyController extends Controller
 
     public function edit(Company $empresa): View
     {
-        return view('paginas.empresas.edit', ['empresa' => $empresa]);
+        $planos = SaasPlan::query()
+            ->where('ativo', true)
+            ->orderBy('nome')
+            ->get(['id', 'nome']);
+
+        return view('paginas.empresas.edit', ['empresa' => $empresa, 'planos' => $planos]);
     }
 
     public function update(UpdateCompanyRequest $request, Company $empresa): RedirectResponse
@@ -87,6 +102,7 @@ class CompanyController extends Controller
             'endereco' => $data['endereco'] ?? null,
             'telefone' => $data['telefone'] ?? null,
             'email' => $data['email'] ?? null,
+            'saas_plan_id' => $data['saas_plan_id'] ?? null,
             'ativo' => $request->boolean('ativo'),
             'billing_blocked' => $request->boolean('billing_blocked'),
             'allowed_screens' => $telas,

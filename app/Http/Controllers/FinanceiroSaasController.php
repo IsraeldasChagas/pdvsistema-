@@ -24,7 +24,7 @@ class FinanceiroSaasController extends Controller
 
     public function financeiroEmpresas(): View
     {
-        $companies = Company::query()->orderBy('nome')->get();
+        $companies = Company::query()->with('saasPlan:id,nome')->orderBy('nome')->get();
         $ids = $companies->pluck('id');
 
         $pendingByCompany = $ids->isEmpty()
@@ -54,7 +54,7 @@ class FinanceiroSaasController extends Controller
             /** @var SaasCharge|null $latest */
             $latest = $latestByCompany->get($company->id);
 
-            $plano = $pending?->saasPlan?->nome ?? $latest?->saasPlan?->nome;
+            $plano = $company->saasPlan?->nome ?? $pending?->saasPlan?->nome ?? $latest?->saasPlan?->nome;
 
             $valorRef = $pending ?? $latest;
             $valorLabel = $valorRef !== null
