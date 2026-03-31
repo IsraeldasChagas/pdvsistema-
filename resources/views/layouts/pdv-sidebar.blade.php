@@ -82,12 +82,18 @@
             </div>
             <button
                 type="button"
-                class="inline-flex rounded-md border border-slate-600 bg-slate-800 px-2 py-1 text-xs font-semibold text-white hover:bg-slate-700"
+                class="inline-flex rounded-md border border-slate-600 bg-slate-800 p-1.5 text-white hover:bg-slate-700"
                 @click="if (window.innerWidth >= 1024) { sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('pdv.sidebarCollapsed', sidebarCollapsed ? '1' : '0'); }"
-                x-text="sidebarCollapsed ? 'Expandir' : 'Recolher'"
                 :aria-label="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
                 :title="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
-            ></button>
+            >
+                <svg x-show="!sidebarCollapsed" x-cloak class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+                <svg x-show="sidebarCollapsed" x-cloak class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+            </button>
         </div>
     </div>
 
