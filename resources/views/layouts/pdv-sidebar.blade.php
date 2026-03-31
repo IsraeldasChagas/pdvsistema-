@@ -46,9 +46,11 @@
 @endphp
 
 <aside
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+    :class="[
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+        sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'
+    ]"
     class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-800 bg-[#0c1929] transition-transform duration-200 ease-out lg:static lg:transition-all lg:duration-200"
-    :class="sidebarCollapsed ? 'lg:w-20' : 'lg:w-64'"
 >
     <div class="flex min-h-16 shrink-0 flex-col justify-center gap-1 border-b border-slate-800 px-4 py-3" :class="sidebarCollapsed ? 'lg:px-2' : 'lg:px-4'">
         <div class="flex items-center gap-3">
