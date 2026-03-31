@@ -43,7 +43,7 @@
                         </button>
                         <button
                             type="button"
-                            class="hidden rounded-lg p-2 text-gray-600 hover:bg-gray-100 lg:inline-flex"
+                            class="hidden rounded-lg p-2 text-gray-600 hover:bg-gray-100 md:inline-flex"
                             @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('pdv.sidebarCollapsed', sidebarCollapsed ? '1' : '0')"
                             :aria-label="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
                             :title="sidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'"
