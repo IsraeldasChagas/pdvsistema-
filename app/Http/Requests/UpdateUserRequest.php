@@ -2,14 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Concerns\ValidatesPartnerUserFields;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
-    use ValidatesPartnerUserFields;
-
     public function authorize(): bool
     {
         return $this->user()?->canManageUsers() ?? false;
@@ -20,7 +17,6 @@ class UpdateUserRequest extends FormRequest
         if (($this->user()->isAdministrador() || $this->user()->isGerente()) && ! $this->user()->isSuperAdmin()) {
             $this->merge(['company_id' => $this->user()->company_id]);
         }
-        $this->preparePartnerFieldsForValidation();
     }
 
     /**
@@ -37,7 +33,7 @@ class UpdateUserRequest extends FormRequest
             $roles[] = 'super_admin';
         }
 
-        return array_merge([
+        return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'role' => ['required', 'string', Rule::in($roles)],
@@ -58,7 +54,7 @@ class UpdateUserRequest extends FormRequest
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'avatar' => ['nullable', 'file', 'max:2048', 'mimes:jpeg,jpg,png,gif,webp'],
             'remover_foto' => ['sometimes', 'boolean'],
-        ], $this->partnerFieldRules());
+        ];
     }
 
     /**

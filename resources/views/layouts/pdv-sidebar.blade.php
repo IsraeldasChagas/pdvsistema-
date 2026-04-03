@@ -23,6 +23,7 @@
             ['route' => 'modulos.entradas', 'label' => 'Entradas', 'icon' => 'in', 'routes' => ['modulos.entradas'], 'hint' => null, 'screen' => 'entradas'],
             ['route' => 'modulos.saidas', 'label' => 'Saídas', 'icon' => 'out', 'routes' => ['modulos.saidas'], 'hint' => null, 'screen' => 'saidas'],
             ['route' => 'modulos.entregas', 'label' => 'Entregas', 'icon' => 'truck', 'routes' => ['modulos.entregas'], 'hint' => null, 'screen' => 'entregas'],
+            ['route' => 'modulos.parceiros', 'label' => 'Parceiros', 'icon' => 'partner', 'routes' => ['modulos.parceiros', 'parceiros.*'], 'hint' => null, 'screen' => 'parceiros'],
             ['route' => 'modulos.venda', 'label' => 'Mini PDV', 'icon' => 'pdv', 'hint' => $pdvHint, 'routes' => ['modulos.venda'], 'screen' => 'mini_pdv'],
             ['route' => 'modulos.caixa', 'label' => 'Caixa', 'icon' => 'cash', 'routes' => ['modulos.caixa'], 'hint' => null, 'screen' => 'caixa'],
             ['route' => 'modulos.comissoes', 'label' => 'Comissões', 'icon' => 'coin', 'routes' => ['modulos.comissoes', 'comissoes.*'], 'hint' => null, 'screen' => 'comissoes'],

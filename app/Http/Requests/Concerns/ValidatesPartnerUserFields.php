@@ -8,6 +8,12 @@ trait ValidatesPartnerUserFields
 {
     protected function preparePartnerFieldsForValidation(): void
     {
+        if ($this->has('parceiro_tipo_documento')) {
+            $v = $this->input('parceiro_tipo_documento');
+            if ($v === '' || $v === null) {
+                $this->merge(['parceiro_tipo_documento' => null]);
+            }
+        }
         if ($this->has('parceiro_documento')) {
             $digits = preg_replace('/\D/', '', (string) $this->input('parceiro_documento'));
             $this->merge(['parceiro_documento' => $digits !== '' ? $digits : null]);
@@ -23,26 +29,20 @@ trait ValidatesPartnerUserFields
     }
 
     /**
+     * Regras para o módulo Parceiros (cadastro completo obrigatório).
+     *
      * @return array<string, mixed>
      */
-    protected function partnerFieldRules(): array
+    protected function partnerModuleFieldRules(): array
     {
         return [
             'telefone' => ['nullable', 'string', 'max:32'],
-            'parceiro_tipo_documento' => [
-                Rule::requiredIf(fn () => $this->boolean('vendedor_rua')),
-                'nullable',
-                Rule::in(['cpf', 'cnpj']),
-            ],
+            'parceiro_tipo_documento' => ['required', Rule::in(['cpf', 'cnpj'])],
             'parceiro_documento' => [
-                Rule::requiredIf(fn () => $this->boolean('vendedor_rua')),
-                'nullable',
+                'required',
                 'string',
                 'max:20',
                 function (string $attribute, mixed $value, \Closure $fail): void {
-                    if (! $this->boolean('vendedor_rua')) {
-                        return;
-                    }
                     $digits = preg_replace('/\D/', '', (string) $value);
                     $tipo = $this->input('parceiro_tipo_documento');
                     if ($tipo === 'cpf' && strlen($digits) !== 11) {

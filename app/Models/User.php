@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Support\PublicStorage;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -204,6 +205,32 @@ class User extends Authenticatable
     {
         // Defaults para novos usuários (vendedor/gerente). Admin e super-admin ignoram isso (têm acesso total).
         return ['dashboard', 'produtos', 'mini_pdv', 'financeiro'];
+    }
+
+    /**
+     * Telas sugeridas para novos parceiros (módulo Parceiros).
+     *
+     * @return list<string>
+     */
+    public function defaultScreensForParceiro(): array
+    {
+        return ['dashboard', 'produtos', 'estoque', 'entregas', 'mini_pdv', 'financeiro'];
+    }
+
+    /**
+     * Vendedores de rua ou com cadastro de parceiro (CPF/CNPJ).
+     *
+     * @param  Builder<User>  $query
+     * @return Builder<User>
+     */
+    public function scopeParceiros(Builder $query): Builder
+    {
+        return $query
+            ->where('role', 'vendedor')
+            ->where(function (Builder $q): void {
+                $q->whereNotNull('parceiro_tipo_documento')
+                    ->orWhere('vendedor_rua', true);
+            });
     }
 
     public function screensCheckedForForm(): array

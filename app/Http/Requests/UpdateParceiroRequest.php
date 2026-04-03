@@ -2,11 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\ValidatesPartnerUserFields;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreUserRequest extends FormRequest
+class UpdateParceiroRequest extends FormRequest
 {
+    use ValidatesPartnerUserFields;
+
     public function authorize(): bool
     {
         return $this->user()?->canManageUsers() ?? false;
@@ -17,6 +20,7 @@ class StoreUserRequest extends FormRequest
         if (($this->user()->isAdministrador() || $this->user()->isGerente()) && ! $this->user()->isSuperAdmin()) {
             $this->merge(['company_id' => $this->user()->company_id]);
         }
+        $this->preparePartnerFieldsForValidation();
     }
 
     /**
@@ -24,33 +28,26 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->route('user');
+        $userId = $user?->id ?? 0;
         $keys = collect(config('pdv.screens', []))->pluck('key')->all();
 
-        $roles = ['administrador', 'gerente', 'vendedor'];
-        if ($this->user()->isSuperAdmin()) {
-            $roles[] = 'super_admin';
-        }
-
-        return [
+        return array_merge([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'role' => ['required', 'string', Rule::in($roles)],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'company_id' => [
-                Rule::requiredIf(fn () => $this->user()->isSuperAdmin() && $this->input('role') !== 'super_admin'),
+                Rule::requiredIf(fn () => $this->user()->isSuperAdmin()),
                 'nullable',
                 'integer',
                 Rule::exists('companies', 'id'),
             ],
-            'vendedor_rua' => ['sometimes', 'boolean'],
-            'screens' => [
-                Rule::requiredIf(fn () => $this->input('role') !== 'super_admin'),
-                'array',
-                'min:1',
-            ],
+            'is_active' => ['sometimes', 'boolean'],
+            'screens' => ['required', 'array', 'min:1'],
             'screens.*' => ['string', Rule::in($keys)],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'avatar' => ['nullable', 'file', 'max:2048', 'mimes:jpeg,jpg,png,gif,webp'],
-        ];
+            'remover_foto' => ['sometimes', 'boolean'],
+        ], $this->partnerModuleFieldRules());
     }
 
     /**
@@ -59,8 +56,8 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'screens.required_if' => 'Selecione ao menos uma tela permitida para o usuário.',
-            'screens.min' => 'Selecione ao menos uma tela permitida para o usuário.',
+            'screens.required' => 'Selecione ao menos uma tela permitida.',
+            'screens.min' => 'Selecione ao menos uma tela permitida.',
             'company_id.required_if' => 'Selecione a empresa.',
         ];
     }
