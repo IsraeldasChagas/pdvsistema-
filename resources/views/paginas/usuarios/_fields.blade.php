@@ -3,8 +3,10 @@
     $showSuperAdminRole = $showSuperAdminRole ?? false;
     $empresas = $empresas ?? collect();
     $roleValue = old('role', $user->role ?? 'vendedor');
+    $vendedorRuaInitial = (bool) old('vendedor_rua', $user->vendedor_rua ?? false);
 @endphp
 
+<div class="space-y-6" x-data="{ vendedorRua: {{ json_encode($vendedorRuaInitial) }} }">
 <div class="rounded-lg border border-gray-200 bg-gray-50/80 p-4">
     <span class="block text-sm font-medium text-gray-700">Foto do usuário</span>
     <p class="mt-0.5 text-xs text-gray-500">Opcional. JPG, PNG ou WebP até 2&nbsp;MB.</p>
@@ -104,15 +106,138 @@
             name="vendedor_rua"
             value="1"
             class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            @checked(old('vendedor_rua', $user->vendedor_rua ?? false))
+            x-model="vendedorRua"
         />
         <span>
-            <span class="block text-sm font-medium text-gray-900">Vendedor de rua</span>
+            <span class="block text-sm font-medium text-gray-900">Vendedor de rua (parceiro)</span>
             <span class="mt-0.5 block text-sm text-gray-600">
                 Se marcado, vende fora da loja e usa estoque próprio (recebe entregas)
             </span>
         </span>
     </label>
+</div>
+
+<div x-show="vendedorRua" x-cloak class="space-y-4 rounded-lg border border-amber-200 bg-amber-50/60 p-4">
+    <div>
+        <h3 class="text-sm font-semibold text-gray-900">Dados do parceiro</h3>
+        <p class="mt-0.5 text-xs text-gray-600">CPF ou CNPJ, contato e endereço para entregas e acerto.</p>
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+            <label for="parceiro_tipo_documento" class="block text-sm font-medium text-gray-700">Documento <span class="text-red-500">*</span></label>
+            <select
+                name="parceiro_tipo_documento"
+                id="parceiro_tipo_documento"
+                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('parceiro_tipo_documento') border-red-500 @enderror"
+            >
+                <option value="">-- Tipo --</option>
+                <option value="cpf" @selected(old('parceiro_tipo_documento', $user->parceiro_tipo_documento) === 'cpf')>CPF (pessoa física)</option>
+                <option value="cnpj" @selected(old('parceiro_tipo_documento', $user->parceiro_tipo_documento) === 'cnpj')>CNPJ (pessoa jurídica)</option>
+            </select>
+            @error('parceiro_tipo_documento')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+        <div>
+            <label for="parceiro_documento" class="block text-sm font-medium text-gray-700">Número <span class="text-red-500">*</span></label>
+            <input
+                type="text"
+                name="parceiro_documento"
+                id="parceiro_documento"
+                value="{{ old('parceiro_documento', $user->parceiro_documento) }}"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Somente números"
+                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('parceiro_documento') border-red-500 @enderror"
+            />
+            @error('parceiro_documento')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+    </div>
+    <div>
+        <label for="parceiro_razao_social" class="block text-sm font-medium text-gray-700">Razão social <span class="font-normal text-gray-500">(opcional, PJ)</span></label>
+        <input
+            type="text"
+            name="parceiro_razao_social"
+            id="parceiro_razao_social"
+            value="{{ old('parceiro_razao_social', $user->parceiro_razao_social) }}"
+            placeholder="Nome da empresa no cartão / NF"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('parceiro_razao_social') border-red-500 @enderror"
+        />
+        @error('parceiro_razao_social')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+    <div>
+        <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone / WhatsApp</label>
+        <input
+            type="text"
+            name="telefone"
+            id="telefone"
+            value="{{ old('telefone', $user->telefone) }}"
+            autocomplete="tel"
+            class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('telefone') border-red-500 @enderror"
+        />
+        @error('telefone')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-6">
+        <div class="sm:col-span-4">
+            <label for="endereco_logradouro" class="block text-sm font-medium text-gray-700">Logradouro</label>
+            <input type="text" name="endereco_logradouro" id="endereco_logradouro" value="{{ old('endereco_logradouro', $user->endereco_logradouro) }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('endereco_logradouro') border-red-500 @enderror" />
+            @error('endereco_logradouro')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="sm:col-span-2">
+            <label for="endereco_numero" class="block text-sm font-medium text-gray-700">Nº</label>
+            <input type="text" name="endereco_numero" id="endereco_numero" value="{{ old('endereco_numero', $user->endereco_numero) }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('endereco_numero') border-red-500 @enderror" />
+            @error('endereco_numero')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+    </div>
+    <div>
+        <label for="endereco_complemento" class="block text-sm font-medium text-gray-700">Complemento</label>
+        <input type="text" name="endereco_complemento" id="endereco_complemento" value="{{ old('endereco_complemento', $user->endereco_complemento) }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('endereco_complemento') border-red-500 @enderror" />
+        @error('endereco_complemento')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div>
+            <label for="endereco_bairro" class="block text-sm font-medium text-gray-700">Bairro</label>
+            <input type="text" name="endereco_bairro" id="endereco_bairro" value="{{ old('endereco_bairro', $user->endereco_bairro) }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('endereco_bairro') border-red-500 @enderror" />
+            @error('endereco_bairro')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+        <div>
+            <label for="endereco_cidade" class="block text-sm font-medium text-gray-700">Cidade</label>
+            <input type="text" name="endereco_cidade" id="endereco_cidade" value="{{ old('endereco_cidade', $user->endereco_cidade) }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('endereco_cidade') border-red-500 @enderror" />
+            @error('endereco_cidade')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label for="endereco_uf" class="block text-sm font-medium text-gray-700">UF</label>
+                <input type="text" name="endereco_uf" id="endereco_uf" maxlength="2" value="{{ old('endereco_uf', $user->endereco_uf) }}" class="mt-1 block w-full uppercase rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('endereco_uf') border-red-500 @enderror" />
+                @error('endereco_uf')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="endereco_cep" class="block text-sm font-medium text-gray-700">CEP</label>
+                <input type="text" name="endereco_cep" id="endereco_cep" value="{{ old('endereco_cep', $user->endereco_cep) }}" inputmode="numeric" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 @error('endereco_cep') border-red-500 @enderror" />
+                @error('endereco_cep')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="border-t border-gray-100 pt-6">
@@ -222,4 +347,6 @@
         autocomplete="new-password"
         class="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
     />
+</div>
+
 </div>

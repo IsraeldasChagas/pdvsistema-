@@ -63,6 +63,8 @@ class UserController extends Controller
 
         $user->syncAllowedScreensFromInput($request->input('screens', []), $data['role']);
 
+        $this->fillPartnerProfile($user, $data, $request->boolean('vendedor_rua'));
+
         if ($request->hasFile('avatar')) {
             try {
                 $user->avatar_path = User::storeAvatarFile($request->file('avatar'));
@@ -123,6 +125,8 @@ class UserController extends Controller
 
         $user->syncAllowedScreensFromInput($request->input('screens', []), $data['role']);
 
+        $this->fillPartnerProfile($user, $data, $request->boolean('vendedor_rua'));
+
         if ($request->hasFile('avatar')) {
             try {
                 User::deleteStoredAvatarFile($user->avatar_path);
@@ -166,6 +170,33 @@ class UserController extends Controller
         return redirect()
             ->route('modulos.usuarios')
             ->with('status', 'Usuário removido.');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function fillPartnerProfile(User $user, array $data, bool $vendedorRua): void
+    {
+        $user->telefone = $data['telefone'] ?? null;
+        $user->endereco_logradouro = $data['endereco_logradouro'] ?? null;
+        $user->endereco_numero = $data['endereco_numero'] ?? null;
+        $user->endereco_complemento = $data['endereco_complemento'] ?? null;
+        $user->endereco_bairro = $data['endereco_bairro'] ?? null;
+        $user->endereco_cidade = $data['endereco_cidade'] ?? null;
+        $user->endereco_uf = $data['endereco_uf'] ?? null;
+        $user->endereco_cep = $data['endereco_cep'] ?? null;
+
+        if (! $vendedorRua) {
+            $user->parceiro_tipo_documento = null;
+            $user->parceiro_documento = null;
+            $user->parceiro_razao_social = null;
+
+            return;
+        }
+
+        $user->parceiro_tipo_documento = $data['parceiro_tipo_documento'] ?? null;
+        $user->parceiro_documento = $data['parceiro_documento'] ?? null;
+        $user->parceiro_razao_social = $data['parceiro_razao_social'] ?? null;
     }
 
     private function authorizeManageUser(User $target): void

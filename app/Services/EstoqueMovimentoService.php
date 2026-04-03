@@ -33,9 +33,13 @@ class EstoqueMovimentoService
     /**
      * Baixa o estoque da loja e credita no estoque do vendedor (vendor_stocks).
      */
-    public static function registrarEntregaParaVendedor(Product $product, int $quantidade, int $destinatarioUserId): void
-    {
-        DB::transaction(function () use ($product, $quantidade, $destinatarioUserId) {
+    public static function registrarEntregaParaVendedor(
+        Product $product,
+        int $quantidade,
+        int $destinatarioUserId,
+        ?string $valorUnitarioRepasse = null,
+    ): void {
+        DB::transaction(function () use ($product, $quantidade, $destinatarioUserId, $valorUnitarioRepasse) {
             $product->decrement('estoque', $quantidade);
             $product->refresh();
 
@@ -56,6 +60,7 @@ class EstoqueMovimentoService
                 'quantidade' => $quantidade,
                 'saldo_apos' => $product->estoque,
                 'observacao' => null,
+                'valor_unitario_repasse' => $valorUnitarioRepasse,
             ]);
         });
     }

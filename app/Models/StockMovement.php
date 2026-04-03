@@ -19,7 +19,15 @@ class StockMovement extends Model
         'quantidade',
         'saldo_apos',
         'observacao',
+        'valor_unitario_repasse',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'valor_unitario_repasse' => 'decimal:2',
+        ];
+    }
 
     public function product(): BelongsTo
     {

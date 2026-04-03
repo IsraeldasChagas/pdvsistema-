@@ -34,6 +34,17 @@ class User extends Authenticatable
         'allowed_screens',
         'is_active',
         'avatar_path',
+        'telefone',
+        'parceiro_tipo_documento',
+        'parceiro_documento',
+        'parceiro_razao_social',
+        'endereco_logradouro',
+        'endereco_numero',
+        'endereco_complemento',
+        'endereco_bairro',
+        'endereco_cidade',
+        'endereco_uf',
+        'endereco_cep',
     ];
 
     /**
