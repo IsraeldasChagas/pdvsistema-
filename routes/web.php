@@ -11,7 +11,6 @@ use App\Http\Controllers\EntregaController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\FinanceiroController;
 use App\Http\Controllers\FinanceiroSaasController;
-use App\Http\Controllers\ParceiroController;
 use App\Http\Controllers\PdvSettingsController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -115,13 +114,6 @@ Route::middleware(['auth', 'verified', 'super.panel', 'pdv.screen'])->group(func
         Route::get('/usuarios/{user}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
         Route::put('/usuarios/{user}', [UserController::class, 'update'])->name('usuarios.update');
         Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
-
-        Route::get('/parceiros', [ParceiroController::class, 'index'])->name('modulos.parceiros');
-        Route::get('/parceiros/novo', [ParceiroController::class, 'create'])->name('parceiros.create');
-        Route::post('/parceiros', [ParceiroController::class, 'store'])->name('parceiros.store');
-        Route::get('/parceiros/{user}/editar', [ParceiroController::class, 'edit'])->name('parceiros.edit');
-        Route::put('/parceiros/{user}', [ParceiroController::class, 'update'])->name('parceiros.update');
-        Route::delete('/parceiros/{user}', [ParceiroController::class, 'destroy'])->name('parceiros.destroy');
     });
     Route::get('/caixa', [CaixaController::class, 'index'])->name('modulos.caixa');
     Route::post('/caixa/abrir', [CaixaController::class, 'abrir'])->name('caixa.abrir');

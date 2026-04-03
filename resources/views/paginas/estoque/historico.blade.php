@@ -47,7 +47,6 @@
                             <th class="px-4 py-3 font-semibold text-gray-700">Tipo</th>
                             <th class="px-4 py-3 font-semibold text-gray-700">Qtd</th>
                             <th class="px-4 py-3 font-semibold text-gray-700">Saldo após</th>
-                            <th class="px-4 py-3 font-semibold text-gray-700">Repasse unit.</th>
                             <th class="px-4 py-3 font-semibold text-gray-700">Vendedor (destino)</th>
                             <th class="px-4 py-3 font-semibold text-gray-700">Usuário</th>
                         </tr>
@@ -71,19 +70,12 @@
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3 font-medium text-gray-900">{{ $m->quantidade }} UN</td>
                                 <td class="whitespace-nowrap px-4 py-3 text-gray-700">{{ $m->saldo_apos }} UN</td>
-                                <td class="whitespace-nowrap px-4 py-3 text-gray-700">
-                                    @if ($m->tipo === 'entrega' && $m->valor_unitario_repasse !== null)
-                                        R$ {{ number_format((float) $m->valor_unitario_repasse, 2, ',', '.') }}
-                                    @else
-                                        —
-                                    @endif
-                                </td>
                                 <td class="whitespace-nowrap px-4 py-3 text-gray-600">{{ $m->destinatario?->name ?? '—' }}</td>
                                 <td class="whitespace-nowrap px-4 py-3 text-gray-600">{{ $m->user?->name ?? '—' }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-12 text-center text-sm text-gray-500">Nenhuma movimentação registrada.</td>
+                                <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-500">Nenhuma movimentação registrada.</td>
                             </tr>
                         @endforelse
                     </tbody>

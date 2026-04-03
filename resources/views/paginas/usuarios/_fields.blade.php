@@ -109,7 +109,7 @@
         <span>
             <span class="block text-sm font-medium text-gray-900">Vendedor de rua</span>
             <span class="mt-0.5 block text-sm text-gray-600">
-                Vende fora da loja e pode receber estoque (entregas). Cadastro completo de parceiro: use o menu <span class="font-semibold">Parceiros</span>.
+                Se marcado, vende fora da loja e usa estoque próprio (recebe entregas)
             </span>
         </span>
     </label>

@@ -10,7 +10,6 @@
                 selected: null,
                 qty: 1,
                 vendedorId: '',
-                precoRepasse: '',
                 openModal(p) {
                     if (p.estoque < 1) {
                         return;
@@ -18,19 +17,12 @@
                     this.selected = p;
                     this.qty = 1;
                     this.vendedorId = '';
-                    this.precoRepasse = '';
                     this.modalOpen = true;
                 },
                 closeModal() {
                     this.modalOpen = false;
                     this.selected = null;
                     this.vendedorId = '';
-                    this.precoRepasse = '';
-                },
-                parsePreco() {
-                    const s = String(this.precoRepasse ?? '').trim().replace(',', '.');
-                    const n = Number(s);
-                    return Number.isFinite(n) ? n : NaN;
                 },
                 matches(p) {
                     if (this.categoriaId !== null && p.category_id !== this.categoriaId) {
@@ -56,19 +48,7 @@
                     if (!Number.isFinite(q)) {
                         return false;
                     }
-                    if (!(q >= 1 && q <= this.selected.estoque)) {
-                        return false;
-                    }
-                    const pr = this.parsePreco();
-                    return Number.isFinite(pr) && pr >= 0.01;
-                },
-                get totalRepasse() {
-                    const q = Number(this.qty);
-                    const pr = this.parsePreco();
-                    if (!Number.isFinite(q) || !Number.isFinite(pr)) {
-                        return null;
-                    }
-                    return q * pr;
+                    return q >= 1 && q <= this.selected.estoque;
                 },
             };
         };
@@ -242,9 +222,7 @@
                             <tr>
                                 <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Data</th>
                                 <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Produto</th>
-                                <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Qtd</th>
-                                <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Valor unit.</th>
-                                <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Total repasse</th>
+                                <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Quantidade</th>
                                 <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Vendedor</th>
                                 <th class="px-4 py-3 font-semibold text-gray-600 sm:px-6">Registrado por</th>
                             </tr>
@@ -255,26 +233,12 @@
                                     <td class="whitespace-nowrap px-4 py-3 text-gray-700 sm:px-6">{{ $e->created_at->format('d/m/Y H:i') }}</td>
                                     <td class="px-4 py-3 font-medium text-gray-900 sm:px-6">{{ $e->product?->nome ?? '—' }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 font-medium text-violet-700 sm:px-6">{{ $e->quantidade }} UN</td>
-                                    <td class="whitespace-nowrap px-4 py-3 text-gray-800 sm:px-6">
-                                        @if ($e->valor_unitario_repasse !== null)
-                                            R$ {{ number_format((float) $e->valor_unitario_repasse, 2, ',', '.') }}
-                                        @else
-                                            —
-                                        @endif
-                                    </td>
-                                    <td class="whitespace-nowrap px-4 py-3 font-medium text-gray-900 sm:px-6">
-                                        @if ($e->valor_unitario_repasse !== null)
-                                            R$ {{ number_format((float) $e->valor_unitario_repasse * (int) $e->quantidade, 2, ',', '.') }}
-                                        @else
-                                            —
-                                        @endif
-                                    </td>
                                     <td class="whitespace-nowrap px-4 py-3 text-gray-700 sm:px-6">{{ $e->destinatario?->name ?? '—' }}</td>
                                     <td class="whitespace-nowrap px-4 py-3 text-gray-600 sm:px-6">{{ $e->user?->name ?? '—' }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-16 text-center sm:px-6">
+                                    <td colspan="5" class="px-4 py-16 text-center sm:px-6">
                                         <div class="mx-auto flex max-w-sm flex-col items-center">
                                             <div class="flex h-14 w-14 items-center justify-center rounded-full bg-violet-50 text-violet-600">
                                                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -358,24 +322,6 @@
                             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
                         />
                         <p class="mt-1 text-xs text-gray-500" x-show="selected" x-text="selected ? 'Máximo na loja: ' + selected.estoque + ' UN' : ''"></p>
-                    </div>
-
-                    <div class="mt-4">
-                        <label for="valor_unitario_repasse" class="block text-sm font-medium text-gray-700">
-                            Valor unitário de repasse (R$) <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="valor_unitario_repasse"
-                            id="valor_unitario_repasse"
-                            required
-                            inputmode="decimal"
-                            placeholder="Ex.: 12,50"
-                            x-model="precoRepasse"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-[#8b5cf6] focus:ring-[#8b5cf6]"
-                        />
-                        <p class="mt-1 text-xs text-gray-500">Preço pelo qual a mercadoria está sendo passada ao parceiro (por unidade).</p>
-                        <p class="mt-1 text-sm font-semibold text-violet-800" x-show="totalRepasse !== null" x-text="'Total desta entrega: R$ ' + totalRepasse.toFixed(2).replace('.', ',')"></p>
                     </div>
 
                     <div class="mt-6 flex flex-wrap justify-end gap-3 border-t border-gray-100 pt-5">
