@@ -8,6 +8,7 @@ if exist "%ProgramFiles%\nodejs\node.exe" set "PATH=%ProgramFiles%\nodejs;%PATH%
 if exist "%LocalAppData%\Programs\nodejs\node.exe" set "PATH=%LocalAppData%\Programs\nodejs;%PATH%"
 
 echo Sistema PDV - http://127.0.0.1:8000
+echo Banco: MySQL remoto ^(.env^)
 echo.
 
 where php >nul 2>nul
@@ -77,24 +78,37 @@ exit /b 1
 :havebuild
 echo OK - public\build OK.
 
-if exist "database\database.sqlite" goto havesqlite
 echo.
-echo Criando database\database.sqlite ^(SQLite, sem MySQL^)...
-type nul > "database\database.sqlite"
+echo Testando MySQL remoto...
+php artisan config:clear >nul 2>&1
+php artisan db:show >nul 2>&1
+if errorlevel 1 goto dbfail
 
-:havesqlite
+echo OK - MySQL remoto conectado.
 echo.
-echo Migrando banco e usuario de teste...
-php artisan migrate --no-interaction
-php artisan db:seed --force --no-interaction
+echo Migrando ^(se houver pendencias^)...
+php artisan migrate --no-interaction --force
+goto serve
 
+:dbfail
+echo.
+echo ERRO: nao foi possivel conectar ao MySQL remoto.
+echo Execute testar-banco.bat para ver o detalhe.
+echo.
+echo Libere o IP do seu PC em MySQL remoto no painel da hospedagem.
+echo Senha com caracteres especiais: use aspas simples no .env
+echo   DB_PASSWORD='sua_senha'
+echo.
+pause
+exit /b 1
+
+:serve
 echo.
 echo ----------------------------------------------
-echo  Login:  admin@sistema.pdv
-echo  Senha:  password
+echo  Login: use o usuario cadastrado no servidor
+echo  ^(ex.: admin@sistema.pdv se existir no remoto^)
 echo ----------------------------------------------
 echo.
-
 echo Servidor: http://127.0.0.1:8000
 echo.
 php artisan serve

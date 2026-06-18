@@ -20,7 +20,15 @@ php artisan storage:link
 php artisan serve
 ```
 
-Ajuste o `.env` (banco SQLite ou MySQL) e credenciais conforme o ambiente.
+Ajuste o `.env` com host, usuário e senha do **MySQL remoto** da hospedagem.
+
+### MySQL remoto (obrigatório para este projeto)
+
+1. No painel da hospedagem (cPanel / Locaweb): **MySQL remoto** → libere o **IP público do seu PC**.
+2. Senha com `$` ou `@` no `.env`: use **aspas simples**, ex.: `DB_PASSWORD='minha$enha'`.
+3. Teste: `testar-banco.bat` ou `php artisan db:show`.
+4. Se o banco não conectar, o **login retorna erro 500** (sessão em `database`).
+
 
 ## Licença
 
